@@ -1,3 +1,13 @@
+Cycle Philly, 2013 Code for Philly
+-----------
+Philadelphia, PA. USA
+
+ Contact: Corey Acri <acri.corey@gmail.com>
+             Lloyd Emelle <lemelle@codeforamerica.org>
+
+Updated/Modified for Philadelphia's app deployment. Based on the
+CycleTracks codebase for SFCTA.
+
 Cycle Atlanta
 -----------
 Copyright 2012 Georgia Institute of Technology
