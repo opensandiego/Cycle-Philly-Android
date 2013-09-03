@@ -30,17 +30,12 @@
 
 package edu.gatech.ppl.cycleatlanta;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Vector;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.os.AsyncTask;
+import android.provider.Settings.System;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -52,12 +47,17 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.os.AsyncTask;
-import android.provider.Settings.System;
-import android.widget.Toast;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Vector;
 
 public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
     Context mCtx;
@@ -326,7 +326,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
 
     @Override
     protected void onPreExecute() {
-        Toast.makeText(mCtx.getApplicationContext(),"Submitting trip. Thanks for using Cycle Atlanta!", Toast.LENGTH_LONG).show();
+        Toast.makeText(mCtx.getApplicationContext(),"Submitting trip. Thanks for using Cycle Philly!", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -335,7 +335,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             if (result) {
                 Toast.makeText(mCtx.getApplicationContext(),"Trip uploaded successfully.", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(mCtx.getApplicationContext(),"Cycle Atlanta couldn't upload the trip, and will retry when your next trip is completed.", Toast.LENGTH_LONG).show();
+                Toast.makeText(mCtx.getApplicationContext(),"Cycle Philly couldn't upload the trip, and will retry when your next trip is completed.", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             // Just don't toast if the view has gone out of context

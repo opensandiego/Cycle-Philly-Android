@@ -30,11 +30,6 @@
 
 package edu.gatech.ppl.cycleatlanta;
 
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -47,6 +42,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RecordingActivity extends Activity {
 	Intent fi;
@@ -106,14 +106,14 @@ public class RecordingActivity extends Activity {
 						rs.startRecording(trip);
 						isRecording = true;
 						RecordingActivity.this.pauseButton.setEnabled(true);
-						RecordingActivity.this.setTitle("Cycle Atlanta - Recording...");
+						RecordingActivity.this.setTitle("Cycle Philly - Recording...");
 						break;
 					case RecordingService.STATE_RECORDING:
 						long id = rs.getCurrentTrip();
 						trip = TripData.fetchTrip(RecordingActivity.this, id);
 						isRecording = true;
 						RecordingActivity.this.pauseButton.setEnabled(true);
-						RecordingActivity.this.setTitle("Cycle Atlanta - Recording...");
+						RecordingActivity.this.setTitle("Cycle Philly - Recording...");
 						break;
 					case RecordingService.STATE_PAUSED:
 						long tid = rs.getCurrentTrip();
@@ -121,7 +121,7 @@ public class RecordingActivity extends Activity {
 						trip = TripData.fetchTrip(RecordingActivity.this, tid);
 						RecordingActivity.this.pauseButton.setEnabled(true);
 						RecordingActivity.this.pauseButton.setText("Resume");
-						RecordingActivity.this.setTitle("Cycle Atlanta - Paused...");
+						RecordingActivity.this.setTitle("Cycle Philly - Paused...");
 						break;
 					case RecordingService.STATE_FULL:
 						// Should never get here, right?
@@ -140,7 +140,7 @@ public class RecordingActivity extends Activity {
 				isRecording = !isRecording;
 				if (isRecording) {
 					pauseButton.setText("Pause");
-					RecordingActivity.this.setTitle("Cycle Atlanta - Recording...");
+					RecordingActivity.this.setTitle("Cycle Philly - Recording...");
 					// Don't include pause time in trip duration
 					if (trip.pauseStartedAt > 0) {
 	                    trip.totalPauseTime += (System.currentTimeMillis() - trip.pauseStartedAt);
@@ -149,7 +149,7 @@ public class RecordingActivity extends Activity {
 					Toast.makeText(getBaseContext(),"GPS restarted. It may take a moment to resync.", Toast.LENGTH_LONG).show();
 				} else {
 					pauseButton.setText("Resume");
-					RecordingActivity.this.setTitle("Cycle Atlanta - Paused...");
+					RecordingActivity.this.setTitle("Cycle Philly - Paused...");
 					trip.pauseStartedAt = System.currentTimeMillis();
 					Toast.makeText(getBaseContext(),"Recording paused; GPS now offline", Toast.LENGTH_LONG).show();
 				}

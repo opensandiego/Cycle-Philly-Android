@@ -30,9 +30,6 @@
 
 package edu.gatech.ppl.cycleatlanta;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -48,6 +45,9 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RecordingService extends Service implements LocationListener {
 	RecordingActivity recordActivity;
@@ -258,7 +258,7 @@ public class RecordingService extends Service implements LocationListener {
 		notification.ledOffMS = 3000;
 
 		Context context = this;
-		CharSequence contentTitle = "Cycle Atlanta - Recording";
+		CharSequence contentTitle = "Cycle Philly - Recording";
 		CharSequence contentText = "Tap to see your ongoing trip";
 		Intent notificationIntent = new Intent(context, RecordingActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
@@ -285,7 +285,7 @@ public class RecordingService extends Service implements LocationListener {
 				Notification.FLAG_NO_CLEAR;
 
 		Context context = this;
-		CharSequence contentTitle = "Cycle Atlanta - Recording";
+		CharSequence contentTitle = "Cycle Philly - Recording";
 		CharSequence contentText = "Tap to see your ongoing trip";
 		Intent notificationIntent = new Intent(context, RecordingActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
