@@ -131,3 +131,6 @@ proguard/
 *.iws
 .idea/
 
+### Linux temp files
+*~
+
