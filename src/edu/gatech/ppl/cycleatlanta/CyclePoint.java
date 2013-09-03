@@ -30,9 +30,10 @@
 
 package edu.gatech.ppl.cycleatlanta;
 
-import com.google.android.maps.GeoPoint;
+import com.google.android.maps.*;
 
 class CyclePoint extends GeoPoint {
+
 	public float accuracy;
 	public double altitude;
 	public float speed;

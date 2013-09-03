@@ -59,8 +59,7 @@
             android:exported="true" >
         </service>
 
-        <uses-library android:name="com.google.android.maps" >
-        </uses-library>
+        <uses-library android:name="com.google.android.maps" />
     </application>
 
 </manifest>
