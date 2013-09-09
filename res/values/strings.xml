@@ -2,7 +2,7 @@
 <resources>
     <string name="recording_title">Cycle Atlanta</string>
     
-    <string name="app_name">Cycle Atlanta</string>
+    <string name="app_name">Cycle Philly</string>
 <string name="previous_trips">Saved Trips:</string>
 <string name="startNewTrip">Start Trip!</string>
 <string name="pauseButtonLabel">Pause</string>
@@ -11,7 +11,7 @@
 <string name="enterTripInfo">And add any comments about your trip here</string>
 <string name="promptPurpose">Select the main purpose of this trip</string>
 <string name="uploadProgressTitle">Sending…</string>
-<string name="uploadProgressMessage">Sending your trip.\n\nThanks for using Cycle Atlanta!</string>
+<string name="uploadProgressMessage">Sending your trip.\n\nThanks for using Cycle Philly!</string>
 
 <string-array name="ageArray">
     <item></item>
