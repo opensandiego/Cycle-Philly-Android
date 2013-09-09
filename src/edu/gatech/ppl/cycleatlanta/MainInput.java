@@ -30,9 +30,6 @@
 
 package edu.gatech.ppl.cycleatlanta;
 
-import java.util.List;
-import java.util.Map;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -61,6 +58,9 @@ import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
+import java.util.Map;
 
 public class MainInput extends Activity {
     private final static int MENU_USER_INFO = 0;
@@ -131,7 +131,7 @@ public class MainInput extends Activity {
 
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Your phone's GPS is disabled. Cycle Atlanta needs GPS to determine your location.\n\nGo to System Settings now to enable GPS?")
+        builder.setMessage("Your phone's GPS is disabled. Cycle Philly needs GPS to determine your location.\n\nGo to System Settings now to enable GPS?")
                .setCancelable(false)
                .setPositiveButton("GPS Settings...", new DialogInterface.OnClickListener() {
                    public void onClick(final DialogInterface dialog, final int id) {
@@ -154,8 +154,8 @@ public class MainInput extends Activity {
 
     private void showWelcomeDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Please enter your personal details so we can learn a bit about you.\n\nThen, try to use Cycle Atlanta every time you ride. Your trip routes will be sent to City of Atlanta so we can plan for better biking!\n\nThanks,\nThe Cycle Atlanta team")
-               .setCancelable(false).setTitle("Welcome to Cycle Atlanta!")
+        builder.setMessage("Please enter your personal details so we can learn a bit about you.\n\nThen, try to use Cycle Philly every time you ride. Your trip routes will be sent to City of Philadelphia so we can plan for better biking!\n\nThanks,\nThe Cycle Philly team")
+               .setCancelable(false).setTitle("Welcome to Cycle Philly!")
                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                    public void onClick(final DialogInterface dialog, final int id) {
                        startActivity(new Intent(MainInput.this, UserInfoActivity.class));
