@@ -12,8 +12,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="069955f6-ae0f-4382-bda9-78308cf17210" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.project" afterPath="$PROJECT_DIR$/.project" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/values/styles.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/MainInput.java" afterPath="$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/MainInput.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/ShowMap.java" afterPath="$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/ShowMap.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/mapview.xml" afterPath="$PROJECT_DIR$/res/layout/mapview.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Cycle-Philly-Android.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -82,21 +85,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TripData.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/TripData.java">
+      <file leaf-file-name="ShowMap.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/ShowMap.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="35" selection-start="1282" selection-end="1289" vertical-scroll-proportion="-3.9285715" vertical-offset="340" max-vertical-offset="3780">
+            <state line="84" column="34" selection-start="2970" selection-end="2970" vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="3465">
               <folding>
-                <element signature="n#!!doc" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TripUploader.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/TripUploader.java">
+      <file leaf-file-name="RecordingActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/RecordingActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1" column="45" selection-start="105" selection-end="112" vertical-scroll-proportion="0.047169812" vertical-offset="0" max-vertical-offset="4845">
+            <state line="144" column="50" selection-start="5118" selection-end="5118" vertical-scroll-proportion="0.0" vertical-offset="2968" max-vertical-offset="3405">
               <folding />
             </state>
           </provider>
@@ -105,83 +108,57 @@
       <file leaf-file-name="UserInfoActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/UserInfoActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="41" column="13" selection-start="1281" selection-end="1281" vertical-scroll-proportion="0.0" vertical-offset="3706" max-vertical-offset="4065">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Cycle-Philly-Android.iml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Cycle-Philly-Android.iml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="390">
+            <state line="12" column="30" selection-start="475" selection-end="477" vertical-scroll-proportion="-4.857143" vertical-offset="44" max-vertical-offset="3780">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AndroidManifest.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="41" selection-start="149" selection-end="149" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1050">
-              <folding>
-                <element signature="e#673#691#0" expanded="true" />
-                <element signature="e#776#794#0" expanded="true" />
-                <element signature="e#1200#1225#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".project" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.project">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="22" selection-start="79" selection-end="79" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="1771" max-vertical-offset="2130">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RecordingActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/RecordingActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="35" selection-start="1282" selection-end="1289" vertical-scroll-proportion="-3.9285715" vertical-offset="340" max-vertical-offset="3825">
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".classpath" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.classpath">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="210">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainInput.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="MainInput.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/MainInput.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="281" column="1" selection-start="10683" selection-end="10683" vertical-scroll-proportion="-7.0" vertical-offset="3419" max-vertical-offset="3840">
+            <state line="137" column="57" selection-start="5584" selection-end="5584" vertical-scroll-proportion="0.52272725" vertical-offset="1383" max-vertical-offset="3840">
               <folding>
                 <element signature="n#!!doc" expanded="true" />
+                <element signature="e#5286#5622#0" expanded="true" />
+                <element signature="e#5604#5605#0" expanded="true" />
+                <element signature="e#5668#5871#0" expanded="true" />
+                <element signature="e#5853#5854#0" expanded="true" />
               </folding>
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RecordingService.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/RecordingService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="51" column="13" selection-start="1847" selection-end="1847" vertical-scroll-proportion="0.0" vertical-offset="3883" max-vertical-offset="4320">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mapview.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/mapview.xml">
+          <provider editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
+              <folding />
+            </state>
+          </provider>
+          <provider selected="true" editor-type-id="android-designer">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/main.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="8" column="0" selection-start="130" selection-end="132" vertical-scroll-proportion="0.0" vertical-offset="120" max-vertical-offset="375">
+              <folding />
+            </state>
+          </provider>
+          <provider editor-type-id="android-designer">
+            <state />
           </provider>
         </entry>
       </file>
@@ -191,6 +168,11 @@
     <FindUsagesManager>
       <setting name="OPEN_NEW_TAB" value="false" />
     </FindUsagesManager>
+  </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="KEY_STORE_PATH" value="$USER_HOME$/android_key/android_key.jks" />
+    <option name="KEY_ALIAS" value="Cycle Philly" />
+    <option name="REMEMBER_PASSWORDS" value="true" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -210,6 +192,8 @@
         <option value="$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/TripUploader.java" />
         <option value="$PROJECT_DIR$/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/.project" />
+        <option value="$PROJECT_DIR$/res/layout/mapview.xml" />
+        <option value="$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/ShowMap.java" />
         <option value="$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/MainInput.java" />
       </list>
     </option>
@@ -280,6 +264,28 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="cycleatlanta" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Cycle-Philly-Android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Cycle-Philly-Android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cycleatlanta" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainInput.java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -366,8 +372,8 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -375,13 +381,16 @@
     <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="ExportedApkPath" value="$PROJECT_DIR$/Cycle-Philly-Android.apk" />
     <property name="options.lastSelected" value="preferences.general" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="recentsLimit" value="5" />
+    <property name="ExportedModule" value="Cycle-Philly-Android" />
     <property name="last_opened_file_path" value="$APPLICATION_HOME_DIR$/sdk/add-ons/addon-google_apis-google-10/libs" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="AndroidRunProguardForReleaseBuild" value="false" />
     <property name="restartRequiresConfirmation" value="true" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="FullScreen" value="false" />
@@ -484,11 +493,11 @@
       <option name="ACTIVITY_CLASS" value="" />
       <option name="MODE" value="default_activity" />
       <option name="DEPLOY" value="true" />
-      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
-      <option name="PREFERRED_AVD" value="new233" />
+      <option name="TARGET_SELECTION_MODE" value="USB_DEVICE" />
+      <option name="PREFERRED_AVD" value="" />
       <option name="USE_COMMAND_LINE" value="true" />
       <option name="COMMAND_LINE" value="" />
-      <option name="WIPE_USER_DATA" value="false" />
+      <option name="WIPE_USER_DATA" value="true" />
       <option name="DISABLE_BOOT_ANIMATION" value="false" />
       <option name="NETWORK_SPEED" value="full" />
       <option name="NETWORK_LATENCY" value="none" />
@@ -547,12 +556,12 @@
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3289777" sideWeight="0.6021672" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3289777" sideWeight="0.6702786" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3978328" sideWeight="0.77709454" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3978328" sideWeight="0.22290546" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32972136" sideWeight="0.49961567" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27708977" sideWeight="0.77709454" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27708977" sideWeight="0.22290546" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -562,7 +571,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24827056" sideWeight="0.6021672" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24827056" sideWeight="0.7229102" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32817337" sideWeight="0.49884704" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -586,46 +595,9 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="0" selection-start="1658" selection-end="1658" vertical-scroll-proportion="0.0" vertical-offset="601" max-vertical-offset="1065">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/twolinelist.xml">
-      <provider editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
-          <folding />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/layout/userprefs.xml">
       <provider editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5355">
-          <folding />
-        </state>
-      </provider>
-      <provider selected="true" editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/main.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="20" selection-start="130" selection-end="132" vertical-scroll-proportion="-0.5263158" vertical-offset="0" max-vertical-offset="375">
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="android-designer">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/layout/mapview.xml">
-      <provider editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="495">
           <folding />
         </state>
       </provider>
@@ -643,86 +615,107 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/UserInfoActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="13" selection-start="1281" selection-end="1281" vertical-scroll-proportion="0.0" vertical-offset="3706" max-vertical-offset="4065">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Cycle-Philly-Android.iml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="390">
-          <folding />
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="390" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.project">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="22" selection-start="79" selection-end="79" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2130" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.classpath">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="359" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/TripUploader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="52" selection-start="390" selection-end="390" vertical-scroll-proportion="0.4245283" vertical-offset="0" max-vertical-offset="4845" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/TripData.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="35" selection-start="1282" selection-end="1289" vertical-scroll-proportion="0.3323263" vertical-offset="340" max-vertical-offset="3780">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="41" selection-start="149" selection-end="149" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1050">
+        <state line="2" column="41" selection-start="149" selection-end="149" vertical-scroll-proportion="-1.3340961" vertical-offset="613" max-vertical-offset="1050">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/main.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="0" selection-start="130" selection-end="132" vertical-scroll-proportion="0.0" vertical-offset="120" max-vertical-offset="375">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/mapview.xml">
+      <provider editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="495">
+          <folding />
+        </state>
+      </provider>
+      <provider selected="true" editor-type-id="android-designer">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/ShowMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="84" column="34" selection-start="2970" selection-end="2970" vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="3465">
           <folding>
-            <element signature="e#673#691#0" expanded="true" />
-            <element signature="e#776#794#0" expanded="true" />
-            <element signature="e#1200#1225#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.project">
+    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/RecordingService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="22" selection-start="79" selection-end="79" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585">
+        <state line="51" column="13" selection-start="1847" selection-end="1847" vertical-scroll-proportion="0.0" vertical-offset="3883" max-vertical-offset="4320">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/RecordingActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2130">
+        <state line="144" column="50" selection-start="5118" selection-end="5118" vertical-scroll-proportion="0.0" vertical-offset="2968" max-vertical-offset="3405">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.classpath">
+    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/UserInfoActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="359">
+        <state line="12" column="30" selection-start="475" selection-end="477" vertical-scroll-proportion="-4.857143" vertical-offset="44" max-vertical-offset="3780">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/MainInput.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="281" column="1" selection-start="10683" selection-end="10683" vertical-scroll-proportion="-7.0" vertical-offset="3419" max-vertical-offset="3840">
+        <state line="137" column="57" selection-start="5584" selection-end="5584" vertical-scroll-proportion="0.52272725" vertical-offset="1383" max-vertical-offset="3840">
           <folding>
             <element signature="n#!!doc" expanded="true" />
+            <element signature="e#5286#5622#0" expanded="true" />
+            <element signature="e#5604#5605#0" expanded="true" />
+            <element signature="e#5668#5871#0" expanded="true" />
+            <element signature="e#5853#5854#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/RecordingActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="35" selection-start="1282" selection-end="1289" vertical-scroll-proportion="-3.9285715" vertical-offset="340" max-vertical-offset="3825">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/TripData.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="35" selection-start="1282" selection-end="1289" vertical-scroll-proportion="-3.9285715" vertical-offset="340" max-vertical-offset="3780">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/edu/gatech/ppl/cycleatlanta/TripUploader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="45" selection-start="105" selection-end="112" vertical-scroll-proportion="0.047169812" vertical-offset="0" max-vertical-offset="4845">
-          <folding />
         </state>
       </provider>
     </entry>
@@ -743,7 +736,7 @@
       </state>
       <state key="FacetStructureConfigurable.UI">
         <settings>
-          <last-edited>Android</last-edited>
+          <last-edited>Android (Cycle-Philly-Android)|Android</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

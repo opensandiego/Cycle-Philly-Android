@@ -30,8 +30,6 @@
 //
 package edu.gatech.ppl.cycleatlanta;
 
-import java.util.List;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -50,6 +48,8 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
+
+import java.util.List;
 
 public class ShowMap extends MapActivity {
 	private MapView mapView;
