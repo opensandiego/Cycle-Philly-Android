@@ -44,7 +44,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -135,11 +134,7 @@ public class MainInput extends Activity {
                .setCancelable(false)
                .setPositiveButton("GPS Settings...", new DialogInterface.OnClickListener() {
                    public void onClick(final DialogInterface dialog, final int id) {
-                       final ComponentName toLaunch = new ComponentName("com.android.settings","com.android.settings.SecuritySettings");
-                       final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                       intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                       intent.setComponent(toLaunch);
-                       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                       final Intent intent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                        startActivityForResult(intent, 0);
                    }
                })
