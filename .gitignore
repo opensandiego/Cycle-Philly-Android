@@ -134,3 +134,6 @@ proguard/
 ### Linux temp files
 *~
 
+## Eclipse metadata
+.metadata/
+
