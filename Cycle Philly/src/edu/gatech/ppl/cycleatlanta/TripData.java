@@ -30,6 +30,7 @@
 
 package edu.gatech.ppl.cycleatlanta;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,7 @@ public class TripData {
 	String purp, fancystart, info;
 
 	List<LatLng> myPts;
+	List<String> myTimesAcc;
 	CyclePoint startpoint, endpoint;
 
 	double totalPauseTime = 0;
@@ -93,6 +95,7 @@ public class TripData {
 		lgthigh = (int) (-180 * 1E6);
 		purp = fancystart = info = "";
 		myPts = new ArrayList<LatLng>();
+		myTimesAcc = new ArrayList<String>();
 
 		updateTrip();
 	}
@@ -110,11 +113,11 @@ public class TripData {
 	    lgtlow =  tripdetails.getDouble(tripdetails.getColumnIndex("lgtlo"));
 	    status =  tripdetails.getInt(tripdetails.getColumnIndex("status"));
 	    endTime = tripdetails.getDouble(tripdetails.getColumnIndex("endtime"));
-      distance = tripdetails.getFloat(tripdetails.getColumnIndex("distance"));
+	    distance = tripdetails.getFloat(tripdetails.getColumnIndex("distance"));
 
-      purp = tripdetails.getString(tripdetails.getColumnIndex("purp"));
-      fancystart = tripdetails.getString(tripdetails.getColumnIndex("fancystart"));
-      info = tripdetails.getString(tripdetails.getColumnIndex("fancyinfo"));
+	    purp = tripdetails.getString(tripdetails.getColumnIndex("purp"));
+	    fancystart = tripdetails.getString(tripdetails.getColumnIndex("fancystart"));
+	    info = tripdetails.getString(tripdetails.getColumnIndex("fancyinfo"));
 
 	    tripdetails.close();
 
@@ -139,14 +142,8 @@ public class TripData {
 		mDb.deleteTrip(tripid);
 		mDb.close();
 	}
-
-	public List<LatLng> getPoints() {
-		// If already built, don't build again!
-		if (myPts != null && myPts.size() > 0) {
-			return myPts;
-		}
-
-		// Otherwise, we need to query DB and build points from scratch.
+	
+	private void readPoints() {
 		try {
 			mDb.openReadOnly();
 
@@ -158,6 +155,7 @@ public class TripData {
 
             numpoints = points.getCount();
             myPts = new ArrayList<LatLng>(numpoints);
+            myTimesAcc = new ArrayList<String>(numpoints);
 
             points.moveToLast();
             this.endpoint   = new CyclePoint(points.getDouble(COL_LAT), points.getDouble(COL_LGT), points.getDouble(COL_TIME));
@@ -170,11 +168,10 @@ public class TripData {
                 double lgt = points.getDouble(COL_LGT);
                 double time = points.getDouble(COL_TIME);
                 float acc = (float) points.getDouble(COL_ACC);
-
-                //addPointToSavedMap(lat, lgt, time, acc);
+                
                 myPts.add(new LatLng(lat, lgt));
-                // TODO: add markers with time/altitude
-
+                myTimesAcc.add(DateFormat.getInstance().format(time) + '\n' + String.format("%1.1f mph", acc));
+                
 				points.moveToNext();
 			}
 			points.close();
@@ -183,13 +180,33 @@ public class TripData {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+	}
+
+	public List<LatLng> getPoints() {
+		// If already built, don't build again!
+		if (myPts != null && myPts.size() > 0) {
+			return myPts;
+		}
+
+		// Otherwise, we need to query DB and build points from scratch.
+		readPoints();
 		return myPts;
+	}
+	
+	public List<String> getTimesAcc() {
+		// If already built, don't build again!
+		if (myTimesAcc != null && myTimesAcc.size() > 0) {
+			return myTimesAcc;
+		}
+
+		// Otherwise, we need to query DB and build points from scratch.
+		readPoints();
+		return myTimesAcc;
 	}
 
 	boolean addPointNow(Location loc, double currentTime, float dst) {
 		double lat = loc.getLatitude();
-	  double lgt = loc.getLongitude();
+		double lgt = loc.getLongitude();
 
 		// Skip duplicates
 		if (latestlat == lat && latestlgt == lgt)

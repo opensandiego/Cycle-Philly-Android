@@ -30,12 +30,11 @@
 //
 package edu.gatech.ppl.cycleatlanta;
 
-import java.sql.Date;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -49,6 +48,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -62,6 +62,7 @@ public class ShowMap extends FragmentActivity {
 	Drawable drawable;
 	Polyline gpspoints;
 	PolylineOptions gpsoptions;
+	ArrayList<MarkerOptions> markers;
 	float[] lineCoords;
 
 	private GoogleMap mMap;
@@ -74,7 +75,6 @@ public class ShowMap extends FragmentActivity {
 		setContentView(R.layout.mapview);
 
 		try {
-			Log.d("got far enough to instantiate map...", "building map");
 			if (mapTracks != null) {
 				mapTracks.clear();
 			} else {
@@ -85,17 +85,10 @@ public class ShowMap extends FragmentActivity {
             long tripid = cmds.getLong("showtrip");
             TripData trip = TripData.fetchTrip(this, tripid);
 
-			LatLng northEastBound = new LatLng(trip.lathigh, trip.lgtlow);
-            LatLng southWestBound = new LatLng(trip.latlow, trip.lgthigh);
-
-            Log.e("Bounds Points", "NE pt:" + trip.lathigh + " " + trip.lgtlow + " SW pt: " +
-            		trip.latlow + " " + trip.lgthigh);
-
-            // Add 500 to map span, to guarantee pins fit on map
-			//final LatLngBounds bounds = new LatLngBounds(southWestBound, northEastBound);
+            // map bounds
             final LatLngBounds bounds = new LatLngBounds.Builder()
-            	.include(northEastBound)
-            	.include(southWestBound)
+            	.include(new LatLng(trip.lathigh, trip.lgtlow))
+            	.include(new LatLng(trip.latlow, trip.lgthigh))
             	.build();
 
 			// check if already instantiated
@@ -107,21 +100,17 @@ public class ShowMap extends FragmentActivity {
 					@Override
 				    public void onGlobalLayout() {
 				        layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-				        // Center & zoom the map
-						// TODO: do this after map layout completes
-				        Log.d("using bounds", "NE: " + bounds.northeast.toString() + " SW: " + bounds.southwest.toString());
+				        // Center & zoom the map after map layout completes
 				        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 5));
 				    }
 				});
-
-
 			} else {
 				mMap.clear();
 			}
 
 			// check if got map
 			if (mMap == null) {
-				// TODO:
+				// TODO: anything?
 				Log.d("Couldn't get map fragment!", "No map fragment");
 				return;
 			}
@@ -135,7 +124,6 @@ public class ShowMap extends FragmentActivity {
             t3.setText(trip.fancystart);
 
 			if (gpspoints == null) {
-				// TODO:
 				AddPointsToMapLayerTask maptask = new AddPointsToMapLayerTask();
 				maptask.execute(trip);
 			} else {
@@ -162,9 +150,23 @@ public class ShowMap extends FragmentActivity {
 		protected PolylineOptions doInBackground(TripData... trips) {
 			trip = trips[0]; // always get just the first trip
 
+			List<LatLng> pos = trip.getPoints();
 			ShowMap.this.gpsoptions = new PolylineOptions();
-			ShowMap.this.gpsoptions.addAll(trip.getPoints());
-
+			ShowMap.this.gpsoptions.addAll(pos);
+			ShowMap.this.markers = new ArrayList<MarkerOptions>(pos.size());
+			List<String> timesAcc = trip.getTimesAcc();
+			
+			// use custom icon for trip points
+			Bitmap bmp = Bitmap.createBitmap(2, 2, Bitmap.Config.ALPHA_8);
+			
+			for (int i = timesAcc.size(); i-->0;) {
+				markers.add(new MarkerOptions()
+					.position(pos.get(i))
+					.title("trip point")
+					.snippet(timesAcc.get(i))
+					.icon(BitmapDescriptorFactory.fromBitmap(bmp)));
+			}
+			
 			return ShowMap.this.gpsoptions;
 		}
 
@@ -174,7 +176,7 @@ public class ShowMap extends FragmentActivity {
 			ShowMap.this.gpspoints = ShowMap.this.mMap.addPolyline(opts);
 			mapTracks.add(ShowMap.this.gpspoints);
 
-			// Add start & end pins
+			// Add start & end markers
 			if (trip.startpoint != null) {
 				mMap.addMarker(new MarkerOptions()
 						.position(trip.startpoint.coords)
@@ -188,6 +190,11 @@ public class ShowMap extends FragmentActivity {
 						.title("end")
 						.snippet(DateFormat.getInstance().format(trip.endTime))
 						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+			}
+			if (ShowMap.this.markers != null & ShowMap.this.markers.size() > 0) {
+				for (int i = ShowMap.this.markers.size(); i-->0;) {
+					mMap.addMarker(ShowMap.this.markers.get(i));
+				}
 			}
 		}
 	}
