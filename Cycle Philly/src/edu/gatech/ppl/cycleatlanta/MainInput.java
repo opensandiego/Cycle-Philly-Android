@@ -61,6 +61,9 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Map;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
 public class MainInput extends Activity {
     private final static int MENU_USER_INFO = 0;
     private final static int MENU_HELP = 1;
@@ -69,6 +72,32 @@ public class MainInput extends Activity {
     private final static int CONTEXT_DELETE = 1;
 
     DbAdapter mDb;
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	
+    	int gotSvc = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
+    	if (gotSvc != ConnectionResult.SUCCESS) {
+			// alert user that Play Services aren't available
+    		if (gotSvc == ConnectionResult.SERVICE_MISSING) {
+    			Toast.makeText(getBaseContext(),"Google Play Services are missing!  Cycle Philly needs them.", 
+    					Toast.LENGTH_LONG).show();
+    		} else if (gotSvc == ConnectionResult.SERVICE_DISABLED) {
+    			Toast.makeText(getBaseContext(),"Google Play Services are disabled!  Cycle Philly needs them.", 
+    					Toast.LENGTH_LONG).show();
+    		} else if (gotSvc == ConnectionResult.SERVICE_INVALID) {
+    			Toast.makeText(getBaseContext(),"Google Play Services are invalid!  Cycle Philly needs them.", 
+    					Toast.LENGTH_LONG).show();
+    		} else if (gotSvc == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
+    			Toast.makeText(getBaseContext(),"Google Play Services need an update!  Cycle Philly needs them.", 
+    					Toast.LENGTH_LONG).show();
+    		} else {
+    			Toast.makeText(getBaseContext(),"Google Play Services aren't available!  Cycle Philly needs them.", 
+    					Toast.LENGTH_LONG).show();
+    		}
+		}
+    }
 
 	/** Called when the activity is first created. */
 	@Override

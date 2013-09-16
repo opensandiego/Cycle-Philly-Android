@@ -45,6 +45,8 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -70,8 +72,11 @@ public class ShowMap extends FragmentActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext()) != ConnectionResult.SUCCESS) {
+			// alert user that Play Services aren't available
+			
+		}
 		super.onCreate(savedInstanceState);
-		//getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.mapview);
 
 		try {
