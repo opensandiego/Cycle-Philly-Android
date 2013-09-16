@@ -50,6 +50,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.MarkerOptionsCreator;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -172,41 +173,17 @@ public class ShowMap extends FragmentActivity {
 
 			// Add start & end pins
 			if (trip.startpoint != null) {
-				MarkerOptions markeropts = new MarkerOptions();
-				markeropts.position(trip.startpoint.coords);
-				markeropts.title("start");
-				markeropts.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
-				mMap.addMarker(markeropts);
-
-				//CircleOptions circleopts = new CircleOptions();
-				//circleopts.center(trip.startpoint.coords);
-				//mMap.addCircle(circleopts);
-
-
+				mMap.addMarker(new MarkerOptions()
+						.position(trip.startpoint.coords)
+						.title("start")
+						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 			}
 			if (trip.endpoint != null) {
-				MarkerOptions markeropts = new MarkerOptions();
-				markeropts.position(trip.startpoint.coords);
-				markeropts.title("start");
-				markeropts.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-				mMap.addMarker(markeropts);
-
-				//CircleOptions circleopts = new CircleOptions();
-				//circleopts.center(trip.endpoint.coords);
-				//mMap.addCircle(circleopts);
+				mMap.addMarker(new MarkerOptions()
+						.position(trip.endpoint.coords)
+						.title("end")
+						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 			}
+		}
 	}
-}
-
-	/*
-	// Make sure overlays get zapped when we go BACK
-	@Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && mapView!=null) {
-            mapView.getOverlays().clear();
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-    */
 }
