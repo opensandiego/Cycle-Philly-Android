@@ -72,10 +72,6 @@ public class ShowMap extends FragmentActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext()) != ConnectionResult.SUCCESS) {
-			// alert user that Play Services aren't available
-			
-		}
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.mapview);
 

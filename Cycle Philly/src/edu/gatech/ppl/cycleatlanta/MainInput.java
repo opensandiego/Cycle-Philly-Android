@@ -32,6 +32,7 @@ package edu.gatech.ppl.cycleatlanta;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -44,6 +45,9 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -64,39 +68,75 @@ import java.util.Map;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-public class MainInput extends Activity {
+public class MainInput extends FragmentActivity {
     private final static int MENU_USER_INFO = 0;
     private final static int MENU_HELP = 1;
 
     private final static int CONTEXT_RETRY = 0;
     private final static int CONTEXT_DELETE = 1;
+    /*
+     * Define a request code to send to Google Play services
+     * This code is returned in Activity.onActivityResult
+     */
+    private final static int
+            CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     DbAdapter mDb;
+    
+ // Define a DialogFragment that displays the error dialog
+    public static class ErrorDialogFragment extends DialogFragment {
+        // Global field to contain the error dialog
+        private Dialog mDialog;
+        // Default constructor. Sets the dialog field to null
+        public ErrorDialogFragment() {
+            super();
+            mDialog = null;
+        }
+        // Set the dialog to display
+        public void setDialog(Dialog dialog) {
+            mDialog = dialog;
+        }
+        // Return a Dialog to the DialogFragment.
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return mDialog;
+        }
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case CONNECTION_FAILURE_RESOLUTION_REQUEST :
+                switch (resultCode) {
+                    case Activity.RESULT_OK :
+                    // try the request again
+                    // TODO:  anything?
+                    
+                    break;
+                }
+        	}
+        }
     
     @Override
     public void onResume() {
     	super.onResume();
     	
-    	int gotSvc = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
-    	if (gotSvc != ConnectionResult.SUCCESS) {
-			// alert user that Play Services aren't available
-    		if (gotSvc == ConnectionResult.SERVICE_MISSING) {
-    			Toast.makeText(getBaseContext(),"Google Play Services are missing!  Cycle Philly needs them.", 
-    					Toast.LENGTH_LONG).show();
-    		} else if (gotSvc == ConnectionResult.SERVICE_DISABLED) {
-    			Toast.makeText(getBaseContext(),"Google Play Services are disabled!  Cycle Philly needs them.", 
-    					Toast.LENGTH_LONG).show();
-    		} else if (gotSvc == ConnectionResult.SERVICE_INVALID) {
-    			Toast.makeText(getBaseContext(),"Google Play Services are invalid!  Cycle Philly needs them.", 
-    					Toast.LENGTH_LONG).show();
-    		} else if (gotSvc == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
-    			Toast.makeText(getBaseContext(),"Google Play Services need an update!  Cycle Philly needs them.", 
-    					Toast.LENGTH_LONG).show();
-    		} else {
-    			Toast.makeText(getBaseContext(),"Google Play Services aren't available!  Cycle Philly needs them.", 
-    					Toast.LENGTH_LONG).show();
-    		}
-		}
+    	// Check that Google Play services is available
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (ConnectionResult.SUCCESS == resultCode) {
+            Log.d("Location Updates", "Google Play services is available.");
+            return;
+        // Google Play services was not available for some reason
+        } else {
+            // Get the error dialog from Google Play services
+            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            // If Google Play services can provide an error dialog
+            if (errorDialog != null) {
+                ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+                errorFragment.setDialog(errorDialog);
+                errorFragment.show(getSupportFragmentManager(), "Location Updates");
+            }
+        }
     }
 
 	/** Called when the activity is first created. */
@@ -105,7 +145,6 @@ public class MainInput extends Activity {
 		super.onCreate(savedInstanceState);
 
 		// Let's handle some launcher lifecycle issues:
-
 		// If we're recording or saving right now, jump to the existing activity.
 		// (This handles user who hit BACK button while recording)
 		setContentView(R.layout.main);
