@@ -103,6 +103,8 @@ xcuserdata
 ### ANDROID
 # built application files
 *.apk
+# except exported build
+!CyclePhilly.apk
 *.ap_
 
 # files for the dex VM
