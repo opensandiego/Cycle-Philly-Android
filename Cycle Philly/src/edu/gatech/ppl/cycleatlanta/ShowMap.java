@@ -30,6 +30,9 @@
 //
 package edu.gatech.ppl.cycleatlanta;
 
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -176,12 +179,14 @@ public class ShowMap extends FragmentActivity {
 				mMap.addMarker(new MarkerOptions()
 						.position(trip.startpoint.coords)
 						.title("start")
+						.snippet(trip.fancystart)
 						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 			}
 			if (trip.endpoint != null) {
 				mMap.addMarker(new MarkerOptions()
 						.position(trip.endpoint.coords)
 						.title("end")
+						.snippet(DateFormat.getInstance().format(trip.endTime))
 						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 			}
 		}
