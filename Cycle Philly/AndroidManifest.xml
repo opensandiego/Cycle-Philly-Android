@@ -13,19 +13,13 @@
          android:protectionLevel="signature"/>
     
 	<uses-permission  android:name="edu.gatech.ppl.cycleatlanta.permission.MAPS_RECEIVE"/>
-	
 	<uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.INTERNET" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" >
-    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"/>
     
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -74,8 +68,13 @@
         <service
             android:name=".RecordingService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </service>
+        
+        <service
+		    android:name=".ActivityRecognitionIntentService"
+		    android:exported="false">
+		</service>
 
         <meta-data
     		android:name="com.google.android.maps.v2.API_KEY"

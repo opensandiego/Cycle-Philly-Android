@@ -30,14 +30,17 @@
 
 package edu.gatech.ppl.cycleatlanta;
 
-import android.app.Activity;
+import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender.SendIntentException;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -48,7 +51,25 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RecordingActivity extends Activity {
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.ActivityRecognitionClient;
+
+public class RecordingActivity extends FragmentActivity implements ConnectionCallbacks, OnConnectionFailedListener {
+	
+	public static final int DETECTION_INTERVAL_MILLISECONDS = 10000; // 10s
+	// Store the PendingIntent used to send activity recognition events back to the app
+	private PendingIntent mActivityRecognitionPendingIntent;
+    // Store the current activity recognition client
+    private ActivityRecognitionClient mActivityRecognitionClient;
+    private Context mContext;
+    // Flag that indicates if a request is underway.
+    private boolean mInProgress;
+    public enum REQUEST_TYPE {START, STOP}
+    private REQUEST_TYPE mRequestType;
+			
 	Intent fi;
 	TripData trip;
 	boolean isRecording = false;
@@ -65,6 +86,8 @@ public class RecordingActivity extends Activity {
     TextView txtAvgSpeed;
 
     final SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");
+     // This code is returned in Activity.onActivityResult
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     // Need handler for callbacks to the UI thread
     final Handler mHandler = new Handler();
@@ -91,12 +114,20 @@ public class RecordingActivity extends Activity {
 		finishButton = (Button) findViewById(R.id.ButtonFinished);
 
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        
+        mContext = getApplicationContext();
+        mInProgress = false;
+        mActivityRecognitionClient = new ActivityRecognitionClient(mContext, this, this);
+        Intent intent = new Intent(mContext, ActivityRecognitionIntentService.class);
+        mActivityRecognitionPendingIntent =
+                PendingIntent.getService(mContext, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
 		// Query the RecordingService to figure out what to do.
 		Intent rService = new Intent(this, RecordingService.class);
 		startService(rService);
 		ServiceConnection sc = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) {}
+			public void onServiceDisconnected(ComponentName name) { stopUpdates(); }
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				IRecordService rs = (IRecordService) service;
 
@@ -104,6 +135,7 @@ public class RecordingActivity extends Activity {
 					case RecordingService.STATE_IDLE:
 						trip = TripData.createTrip(RecordingActivity.this);
 						rs.startRecording(trip);
+						startUpdates();
 						isRecording = true;
 						RecordingActivity.this.pauseButton.setEnabled(true);
 						RecordingActivity.this.setTitle("Cycle Philly - Recording...");
@@ -112,6 +144,7 @@ public class RecordingActivity extends Activity {
 						long id = rs.getCurrentTrip();
 						trip = TripData.fetchTrip(RecordingActivity.this, id);
 						isRecording = true;
+						startUpdates();
 						RecordingActivity.this.pauseButton.setEnabled(true);
 						RecordingActivity.this.setTitle("Cycle Philly - Recording...");
 						break;
@@ -273,4 +306,125 @@ public class RecordingActivity extends Activity {
         super.onPause();
         if (timer != null) timer.cancel();
     }
+    
+    public void startUpdates() {
+    	// If a request is not already underway
+    	
+    	mRequestType = REQUEST_TYPE.START;
+        if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS) {
+            return;
+        }
+        
+        if (!mInProgress) {
+            mInProgress = true; // Indicate that a request is in progress
+            mActivityRecognitionClient.connect(); // Request a connection to Location Services
+        } else {
+            /*
+             * A request is already underway. You can handle
+             * this situation by disconnecting the client,
+             * re-setting the flag, and then re-trying the
+             * request.
+             */
+        	// TODO:
+        }
+    }
+    
+    public void stopUpdates() {
+        // Set the request type to STOP
+        mRequestType = REQUEST_TYPE.STOP;
+        /*
+         * Test for Google Play services after setting the request type.
+         * If Google Play services isn't present, the request can be
+         * restarted.
+         */
+        if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS) {
+            return;
+        }
+        // If a request is not already underway
+        if (!mInProgress) {
+            // Indicate that a request is in progress
+            mInProgress = true;
+            // Request a connection to Location Services
+            mActivityRecognitionClient.connect();
+        //
+        } else {
+            /*
+             * A request is already underway. You can handle
+             * this situation by disconnecting the client,
+             * re-setting the flag, and then re-trying the
+             * request.
+             */
+        }
+    }
+
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+		// Turn off the request flag
+        mInProgress = false;
+        /*
+         * If the error has a resolution, start a Google Play services
+         * activity to resolve it.
+         */
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        // If no resolution is available, display an error dialog
+        } else {
+            // Get the error code
+            int errorCode = connectionResult.getErrorCode();
+            // Get the error dialog from Google Play services
+            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
+                    errorCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            // If Google Play services can provide an error dialog
+            if (errorDialog != null) {
+                ErrorDialogFragment errorFragment =
+                        new ErrorDialogFragment();
+                errorFragment.setDialog(errorDialog);
+                // Show the error dialog in the DialogFragment
+                errorFragment.show(getSupportFragmentManager(), "Activity Recognition");
+            }
+        }
+	}
+
+	@Override
+	public void onConnected(Bundle dataBundle) {
+		/*
+         * Request activity recognition updates using the preset
+         * detection interval and PendingIntent. This call is
+         * synchronous.
+         */
+        mActivityRecognitionClient.requestActivityUpdates(
+                DETECTION_INTERVAL_MILLISECONDS,
+                mActivityRecognitionPendingIntent);
+        /*
+         * Since the preceding call is synchronous, turn off the
+         * in progress flag and disconnect the client
+         */
+        mInProgress = false;
+        mActivityRecognitionClient.disconnect();
+        
+        switch (mRequestType) {
+        	case STOP :
+        		mActivityRecognitionClient.removeActivityUpdates(
+                mActivityRecognitionPendingIntent);
+        		break;
+		case START:
+			break;
+		default:
+			break;
+        }
+        
+	}
+    
+	@Override
+	public void onDisconnected() {
+		// Turn off the request flag
+        mInProgress = false;
+        // Delete the client
+        mActivityRecognitionClient = null;
+	}
 }
