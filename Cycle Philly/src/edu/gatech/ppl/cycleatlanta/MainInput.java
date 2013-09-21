@@ -70,6 +70,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 public class MainInput extends FragmentActivity {
     private final static int MENU_USER_INFO = 0;
     private final static int MENU_HELP = 1;
+    private final static int MENU_MAP = 2;
 
     private final static int CONTEXT_RETRY = 0;
     private final static int CONTEXT_DELETE = 1;
@@ -297,6 +298,7 @@ public class MainInput extends FragmentActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, MENU_HELP, 0, "Help and FAQ").setIcon(android.R.drawable.ic_menu_help);
         menu.add(0, MENU_USER_INFO, 0, "Edit User Info").setIcon(android.R.drawable.ic_menu_edit);
+        menu.add(0, MENU_MAP, 0, "Map Nearby Racks and Routes").setIcon(android.R.drawable.ic_menu_compass);
         return true;
     }
 
@@ -313,6 +315,11 @@ public class MainInput extends FragmentActivity {
         			Uri.parse("http://cycleatlanta.org/instructions/androidhelp.html"));
    			startActivity(myIntent);
             return true;
+        case MENU_MAP:
+        	// TODO: something
+        	Log.d("menu click", "you clicked me!");
+        	startActivity(new Intent(this, ShowMapNearby.class));
+        	return true;
         }
         return false;
     }
