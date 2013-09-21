@@ -193,6 +193,8 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 		// Finish button
 		finishButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				stopUpdates(); // done checking current activity
+				
 				// If we have points, go to the save-trip activity
 				if (trip.numpoints > 0) {
 				    // Handle pause time gracefully
@@ -261,10 +263,11 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 	void cancelRecording() {
 		Intent rService = new Intent(this, RecordingService.class);
 		ServiceConnection sc = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) {}
+			public void onServiceDisconnected(ComponentName name) { }
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				IRecordService rs = (IRecordService) service;
 				rs.cancelRecording();
+				stopUpdates();
 				unbindService(this);
 			}
 		};
@@ -392,38 +395,31 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 
 	@Override
 	public void onConnected(Bundle dataBundle) {
-		/*
-         * Request activity recognition updates using the preset
-         * detection interval and PendingIntent. This call is
-         * synchronous.
-         */
-        mActivityRecognitionClient.requestActivityUpdates(
-                DETECTION_INTERVAL_MILLISECONDS,
-                mActivityRecognitionPendingIntent);
-        /*
-         * Since the preceding call is synchronous, turn off the
-         * in progress flag and disconnect the client
-         */
-        mInProgress = false;
-        mActivityRecognitionClient.disconnect();
         
         switch (mRequestType) {
         	case STOP :
         		mActivityRecognitionClient.removeActivityUpdates(
                 mActivityRecognitionPendingIntent);
         		break;
-		case START:
-			break;
-		default:
-			break;
+			case START:
+				mActivityRecognitionClient.requestActivityUpdates(
+		                DETECTION_INTERVAL_MILLISECONDS,
+		                mActivityRecognitionPendingIntent);
+				
+				mInProgress = false;
+		        mActivityRecognitionClient.disconnect();
+				break;
+			default:
+				break;
         }
-        
 	}
     
 	@Override
 	public void onDisconnected() {
 		// Turn off the request flag
         mInProgress = false;
+        mActivityRecognitionClient.removeActivityUpdates(
+                mActivityRecognitionPendingIntent);
         // Delete the client
         mActivityRecognitionClient = null;
 	}

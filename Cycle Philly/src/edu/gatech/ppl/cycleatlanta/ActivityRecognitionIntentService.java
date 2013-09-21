@@ -6,7 +6,7 @@ import com.google.android.gms.location.DetectedActivity;
 import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
+
 /**
  * Service that receives ActivityRecognition updates. It receives
  * updates in the background, even if the main Activity is not visible.
