@@ -49,14 +49,19 @@ public class ShowMapNearby extends FragmentActivity {
 	
 		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
 		Location loc = lm.getLastKnownLocation(lm.getBestProvider(criteria, false));
         
-        //if (loc != null) {
-       // 	mySpot = new LatLng(loc.getLatitude(), loc.getLongitude());
-       // } else {
+		
+        if (loc != null) {
+        	mySpot = new LatLng(loc.getLatitude(), loc.getLongitude());
+        } else {
         	mySpot = new LatLng(39.952451,-75.163664); // city hall by default
-        //}
+        }
+        
+		
+		//mySpot = new LatLng(39.924877,-75.158871);
+		/////////////////
 		
 		// check if already instantiated
 		if (mMap == null) {
@@ -85,23 +90,24 @@ public class ShowMapNearby extends FragmentActivity {
 		}
 		
 		AddRacksToMapLayerTask add_racks = new AddRacksToMapLayerTask();
-		add_racks.execute();
+		add_racks.execute(mySpot);
 		
 	}
 	
-	private class AddRacksToMapLayerTask extends AsyncTask<Void, Void, ArrayList<MarkerOptions>> {
+	private class AddRacksToMapLayerTask extends AsyncTask<LatLng, Void, ArrayList<MarkerOptions>> {
 
 		@Override
-		protected ArrayList<MarkerOptions> doInBackground(Void... foo) {
+		protected ArrayList<MarkerOptions> doInBackground(LatLng... centers) {
 			ArrayList<MarkerOptions> rack_markers;
 			rack_markers = new ArrayList<MarkerOptions>();
-			LatLng myLoc = ShowMapNearby.this.mySpot;
+			LatLng myLoc = centers[0];
 			
 			SpatialReference mercator = SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR);
 			SpatialReference sr = SpatialReference.create(4326);
+			SpatialReference serverSpatialRef = SpatialReference.create(2272);
 			
 			Query qry = new Query();
-			qry.setInSpatialReference(sr);
+			qry.setInSpatialReference(serverSpatialRef);
 			qry.setOutSpatialReference(sr);
 			qry.setReturnGeometry(true);
 			qry.setSpatialRelationship(SpatialRelationship.CONTAINS);
@@ -113,10 +119,10 @@ public class ShowMapNearby extends FragmentActivity {
 			Geometry buffer = null;
 			Unit lu = Unit.create(9003);
 			
-			// 1/2 mi
-			buffer = GeometryEngine.buffer(new Point(myLoc.longitude, myLoc.latitude), mercator, 2540, lu);
+			Point reprojPt = GeometryEngine.project(myLoc.longitude, myLoc.latitude, serverSpatialRef);
 			
-			Log.d("buffer area",  "buffer area is " + Double.toString(buffer.calculateArea2D()));
+			// 1/2 mi - 2540
+			buffer = GeometryEngine.buffer(reprojPt, serverSpatialRef, 2540, lu);
 			
 			qry.setGeometry(buffer);
 			qry.setMaxFeatures(25); // show max 50 nearby racks (if 25 from each service)
@@ -133,8 +139,17 @@ public class ShowMapNearby extends FragmentActivity {
 				Log.d("gotCityRacks", cityObj.toString());
 				Log.d("gotAdoptedRacks", adoptedObj.toString());
 				
-				JSONArray city = cityObj.getJSONArray("features");
-				JSONArray adopted = adoptedObj.getJSONArray("features");
+				JSONArray city = null;
+				JSONArray adopted = null;
+				
+				// if no results, get no value for features
+				if (cityObj.has("features")) {
+					city = cityObj.getJSONArray("features");
+				}
+				
+				if (adoptedObj.has("features")) {
+					adopted = adoptedObj.getJSONArray("features");
+				}
 				
 				JSONObject row;
 				JSONObject geom;
@@ -143,43 +158,55 @@ public class ShowMapNearby extends FragmentActivity {
 				BitmapDescriptor cityIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
 				BitmapDescriptor adoptedIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA);
 				
-				rack_markers = new ArrayList<MarkerOptions>(city.length() + adopted.length());
-				
-				for (int i = city.length(); i--> 0; ) {
-					row = city.getJSONObject(i);
-					geom = row.getJSONObject("geometry");
-					attr = row.getJSONObject("attributes");
-					
-					snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + "\n\nType: " + 
-							attr.getString("RACK_TYPE") + "\n\nNumber: " + 
-							attr.getInt("NUM_RACKS"); 
-					
-					rack_markers.add(new MarkerOptions()
-						.position(new LatLng(geom.getDouble("y"), geom.getDouble("x")))
-						.title(attr.getString("LOCATION"))
-						.snippet(snippetStr)
-						.icon(cityIcon));
+				if (city != null && adopted != null) {
+					rack_markers = new ArrayList<MarkerOptions>(city.length() + adopted.length());
+				} else if (city != null) {
+					rack_markers = new ArrayList<MarkerOptions>(city.length());
+				} else if (adopted != null) {
+					rack_markers = new ArrayList<MarkerOptions>(adopted.length());
+				} else {
+					// TODO: no results.  show message
+					Log.d("get bike racks", "no results found");
 				}
 				
-				for (int i = adopted.length(); i--> 0; ) {
-					row = adopted.getJSONObject(i);
-					geom = row.getJSONObject("geometry");
-					attr = row.getJSONObject("attributes");
-					
-					snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + "\n\nType: " + 
-							attr.getString("RACK_TYPE") + "\n\nNumber: " + 
-							attr.getInt("NUM_RACKS"); 
-					
-					rack_markers.add(new MarkerOptions()
-						.position(new LatLng(geom.getDouble("y"), geom.getDouble("x")))
-						.title(attr.getString("LOCATION"))
-						.snippet(snippetStr)
-						.icon(adoptedIcon));
+				if (city != null) {
+					for (int i = city.length(); i--> 0; ) {
+						row = city.getJSONObject(i);
+						geom = row.getJSONObject("geometry");
+						attr = row.getJSONObject("attributes");
+						
+						snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + "\n\nType: " + 
+								attr.getString("RACK_TYPE") + "\n\nNumber: " + 
+								attr.getInt("NUM_RACKS"); 
+						
+						rack_markers.add(new MarkerOptions()
+							.position(new LatLng(geom.getDouble("y"), geom.getDouble("x")))
+							.title(attr.getString("LOCATION"))
+							.snippet(snippetStr)
+							.icon(cityIcon));
+					}
 				}
 				
+				if (adopted != null) {
+					for (int i = adopted.length(); i--> 0; ) {
+						row = adopted.getJSONObject(i);
+						geom = row.getJSONObject("geometry");
+						attr = row.getJSONObject("attributes");
+						
+						snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + "\n\nType: " + 
+								attr.getString("RACK_TYPE") + "\n\nNumber: " + 
+								attr.getInt("NUM_RACKS"); 
+						
+						rack_markers.add(new MarkerOptions()
+							.position(new LatLng(geom.getDouble("y"), geom.getDouble("x")))
+							.title(attr.getString("LOCATION"))
+							.snippet(snippetStr)
+							.icon(adoptedIcon));
+					}
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				Log.e("Async get FeatureSets", e.getMessage());
+				//Log.e("Async get FeatureSets", e.getMessage());
 				e.printStackTrace();
 			}
 			
@@ -189,8 +216,10 @@ public class ShowMapNearby extends FragmentActivity {
 		@Override
 		protected void onPostExecute(ArrayList<MarkerOptions> racks) {
 			// TODO:
-			for (int i = racks.size(); i--> 0; ) {
-				mMap.addMarker(racks.get(i));
+			if (racks != null) {
+				for (int i = racks.size(); i--> 0; ) {
+					mMap.addMarker(racks.get(i));
+				}
 			}
 		}
 	}
