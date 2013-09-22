@@ -1,19 +1,15 @@
 package edu.gatech.ppl.cycleatlanta;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Scanner;
-
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.esri.core.geometry.Geometry;
+import com.esri.core.geometry.Point;
+import com.esri.core.geometry.SpatialReference;
+import com.esri.core.geometry.Unit;
+import com.esri.core.map.FeatureSet;
+import com.esri.core.tasks.SpatialRelationship;
+import com.esri.core.tasks.ags.query.*;
+import com.esri.core.geometry.GeometryEngine;
 import org.json.JSONObject;
-
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
@@ -25,13 +21,11 @@ import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.LinearLayout;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import edu.gatech.ppl.cycleatlanta.R;
 
 public class ShowMapNearby extends FragmentActivity {
@@ -50,11 +44,11 @@ public class ShowMapNearby extends FragmentActivity {
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
 		Location loc = lm.getLastKnownLocation(lm.getBestProvider(criteria, false));
         
-        if (loc != null) {
-        	mySpot = new LatLng(loc.getLatitude(), loc.getLongitude());
-        } else {
+        //if (loc != null) {
+       // 	mySpot = new LatLng(loc.getLatitude(), loc.getLongitude());
+       // } else {
         	mySpot = new LatLng(39.952451,-75.163664); // city hall by default
-        }
+        //}
 		
 		// check if already instantiated
 		if (mMap == null) {
@@ -82,76 +76,60 @@ public class ShowMapNearby extends FragmentActivity {
 			return;
 		}
 		
-		try {
-			AddRacksToMapLayerTask add_racks = new AddRacksToMapLayerTask();
-			URL city_racks = new URL("http://gis.phila.gov/ArcGIS/rest/services/Streets/Bike_Racks/MapServer/0?f=json");
-			URL adopted_racks = new URL("http://gis.phila.gov/ArcGIS/rest/services/Streets/Bike_Racks/MapServer/1?f=json");
-			add_racks.execute(city_racks, adopted_racks);
-			
-		} catch (MalformedURLException e) {
-			Log.e("adding racks", e.getMessage());
-		}
+		AddRacksToMapLayerTask add_racks = new AddRacksToMapLayerTask();
+		add_racks.execute();
+		
 	}
 	
-	private class AddRacksToMapLayerTask extends AsyncTask<URL, Void, ArrayList<MarkerOptions>> {
+	private class AddRacksToMapLayerTask extends AsyncTask<Void, Void, ArrayList<MarkerOptions>> {
 
 		@Override
-		protected ArrayList<MarkerOptions> doInBackground(URL... urls) {
+		protected ArrayList<MarkerOptions> doInBackground(Void... foo) {
 			ArrayList<MarkerOptions> rack_markers;
 			rack_markers = new ArrayList<MarkerOptions>();
 			LatLng myLoc = ShowMapNearby.this.mySpot;
+			SpatialReference mercator = SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR);
+			SpatialReference sr = SpatialReference.create(4326);
 			
-			String bufferStr = "http://gis.phila.gov/ArcGIS/rest/services/Geometry/GeometryServer/buffer";
-			bufferStr += "?geometries={%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A[{%22x%22%3A";
-			bufferStr += myLoc.longitude + "%2C%22y%22%3A" + myLoc.latitude;
-			// buffer 1/2 mi
-			bufferStr += "}]}%0D%0A&inSR=4326&outSR=4326&bufferSR=4326&distances=2640&unit=9003&unionResults=false&f=json";
+			Query qry = new Query();
+			qry.setInSpatialReference(sr);
+			qry.setOutSpatialReference(sr);
+			qry.setReturnGeometry(true);
+			qry.setSpatialRelationship(SpatialRelationship.CONTAINS);
+			qry.setReturnIdsOnly(false);
+			
+			String[] flds = {"LOCATION", "NUM_RACKS", "RACK_TYPE", "SIDEWALK"};
+			qry.setOutFields(flds);
+			
+			Geometry buffer = null;
+			Unit lu = Unit.create(9003);
+			
+			// 1/2 mi
+			buffer = GeometryEngine.buffer(new Point(myLoc.longitude, myLoc.latitude), mercator, 2540, lu);
+			
+			Log.d("buffer area",  "buffer area is " + Double.toString(buffer.calculateArea2D()));
+			
+			qry.setGeometry(buffer);
+			qry.setMaxFeatures(25); // show max 50 nearby racks (if 25 from each service)
+			QueryTask getCityRacks = new QueryTask("http://gis.phila.gov/ArcGIS/rest/services/Streets/Bike_Racks/MapServer/0");
+			QueryTask getAdoptedRacks = new QueryTask("http://gis.phila.gov/ArcGIS/rest/services/Streets/Bike_Racks/MapServer/1");
 			
 			try {
-				//URL bufferSvc = new URL("http://gis.phila.gov/ArcGIS/rest/services/Geometry/GeometryServer/buffer");
-				URL bufferSvc = new URL(bufferStr);
-				//HttpURLConnection conn = (HttpURLConnection) urls[0].openConnection();
+				FeatureSet gotCityRacks = getCityRacks.execute(qry);
+				FeatureSet gotAdoptedRacks = getAdoptedRacks.execute(qry);
 				
-				HttpURLConnection conn = (HttpURLConnection) bufferSvc.openConnection();
+				JSONObject city = new JSONObject(FeatureSet.toJson(gotCityRacks));
+				JSONObject adopted = new JSONObject(FeatureSet.toJson(gotAdoptedRacks));
 				
-				InputStream in = new BufferedInputStream(conn.getInputStream());
-				JSONObject buffer_json = new JSONObject(new Scanner(in).useDelimiter("\\A").next());
+				Log.d("gotCityRacks", city.toString());
+				Log.d("gotAdoptedRacks", adopted.toString());
 				
-				conn.disconnect();
-				in.close();
 				
-				JSONArray geom_json = buffer_json.getJSONArray("geometries");
-				JSONObject rings_json = geom_json.getJSONObject(0);
-				rings_json = rings_json.put("wkid", 4326); // TODO: needs closing bracket %7D
-				
-				String qryRacks = "http://gis.phila.gov/ArcGIS/rest/services/Streets/Bike_Racks/MapServer/1/query?text=&geometry=%7B%22spatialReference%22%3A";
-				//qryRacks += URLEncoder.encode(rings_json.toString());
-				qryRacks += rings_json.toString();
-				qryRacks += "&geometryType=esriGeometryPolygon&inSR=4326&spatialRel=esriSpatialRelContains&relationParam=&objectIds=&where=&time=&returnCountOnly=false&returnIdsOnly=false&returnGeometry=true&maxAllowableOffset=&outSR=4326&outFields=%27LOCATION%27&f=json";
-				Log.d("racks query URL", qryRacks);
-				
-				URL racksSvc = new URL(qryRacks);
-				
-				conn = (HttpURLConnection) racksSvc.openConnection();
-				conn.setRequestMethod("POST");
-				Log.d("got connection", "got connection to racks service");
-				in = new BufferedInputStream(conn.getInputStream());
-				Log.d("got stream", "got racks service stream");
-				buffer_json = new JSONObject(new Scanner(in).useDelimiter("\\A").next());
-				Log.d("query result", buffer_json.toString());
-				
-			} catch (MalformedURLException e1) {
-				Log.e("adding racks MalformedURLException", e1.getMessage());
-			} catch (IOException e) {
-				Log.e("adding racks IOException", e.getMessage());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				Log.e("Async get FeatureSets", e.getMessage());
 				e.printStackTrace();
-			} catch (JSONException e) {
-				Log.e("adding racks JSONException", e.getMessage());
 			}
-			
-			
-			// TODO:
-			
 			
 			return rack_markers;
 		}
