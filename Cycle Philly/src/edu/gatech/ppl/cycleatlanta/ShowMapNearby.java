@@ -1,8 +1,5 @@
 package edu.gatech.ppl.cycleatlanta;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import com.esri.core.geometry.Geometry;
@@ -70,16 +67,13 @@ public class ShowMapNearby extends FragmentActivity {
         t1.setText("Bicycle Parking");
         t3.setText("loading...");
         
-        /*
         if (loc != null) {
         	mySpot = new LatLng(loc.getLatitude(), loc.getLongitude());
         } else {
         	mySpot = new LatLng(39.952451,-75.163664); // city hall by default
         	t2.setText("Current location not found; enable GPS to search nearby.");
-        	// TODO: show message to tell user to enable location svcs and try again
-        }*/
-        
-        mySpot = new LatLng(39.952451,-75.163664);
+        	// show message to tell user to enable location svcs and try again
+        }
 		
 		//mySpot = new LatLng(39.924877,-75.158871);
 		/////////////////
@@ -105,7 +99,6 @@ public class ShowMapNearby extends FragmentActivity {
 
 		// check if got map
 		if (mMap == null) {
-			// TODO: anything?
 			Log.e("Couldn't get map fragment!", "No map fragment");
 			return;
 		}
@@ -161,7 +154,7 @@ public class ShowMapNearby extends FragmentActivity {
 			}
 			*/
 			
-			SpatialReference mercator = SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR);
+			//SpatialReference mercator = SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR);
 			SpatialReference sr = SpatialReference.create(4326);
 			SpatialReference serverSpatialRef = SpatialReference.create(2272);
 			
@@ -195,8 +188,8 @@ public class ShowMapNearby extends FragmentActivity {
 				JSONObject cityObj = new JSONObject(FeatureSet.toJson(gotCityRacks));
 				JSONObject adoptedObj = new JSONObject(FeatureSet.toJson(gotAdoptedRacks));
 				
-				Log.d("gotCityRacks", cityObj.toString());
-				Log.d("gotAdoptedRacks", adoptedObj.toString());
+				//Log.d("gotCityRacks", cityObj.toString());
+				//Log.d("gotAdoptedRacks", adoptedObj.toString());
 				
 				JSONArray city = null;
 				JSONArray adopted = null;
@@ -283,7 +276,6 @@ public class ShowMapNearby extends FragmentActivity {
 		
 		@Override
 		protected void onPostExecute(ArrayList<MarkerOptions> racks) {
-			// TODO:
 			if (racks != null) {
 				for (int i = racks.size(); i--> 0; ) {
 					mMap.addMarker(racks.get(i));
