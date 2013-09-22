@@ -38,6 +38,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import edu.gatech.ppl.cycleatlanta.R;
 
@@ -106,6 +108,9 @@ public class ShowMapNearby extends FragmentActivity {
 		mMap.setInfoWindowAdapter(new BikeRackInfoWindow(getLayoutInflater()));
 		AddRacksToMapLayerTask add_racks = new AddRacksToMapLayerTask();
 		add_racks.execute(mySpot);
+		
+		AddRoutesToMapLayerTask add_routes = new AddRoutesToMapLayerTask();
+		add_routes.execute(mySpot);
 		
 	}
 	
@@ -287,6 +292,97 @@ public class ShowMapNearby extends FragmentActivity {
 			}
 			
 			t3.setText("");
+		}
+	}
+	
+	private class AddRoutesToMapLayerTask extends AsyncTask<LatLng, Void, ArrayList<PolylineOptions>> {
+
+		@Override
+		protected ArrayList<PolylineOptions> doInBackground(LatLng... centers) {
+			ArrayList<PolylineOptions> route_options;
+			route_options = new ArrayList<PolylineOptions>();
+			LatLng myLoc = centers[0];
+			
+			SpatialReference sr = SpatialReference.create(4326);
+			SpatialReference serverSpatialRef = SpatialReference.create(3857);
+			
+			Query qry = new Query();
+			qry.setInSpatialReference(serverSpatialRef);
+			qry.setOutSpatialReference(sr);
+			qry.setReturnGeometry(true);
+			qry.setSpatialRelationship(SpatialRelationship.CONTAINS);
+			qry.setReturnIdsOnly(false);
+			
+			String[] flds = {"STREETNAME", "ONEWAY", "TYPE", "CLASS", "SHAPE"};
+			qry.setOutFields(flds);
+			
+			Geometry buffer = null;
+			Unit lu = Unit.create(9003);
+			
+			Point reprojPt = GeometryEngine.project(myLoc.longitude, myLoc.latitude, serverSpatialRef);
+			
+			buffer = GeometryEngine.buffer(reprojPt, serverSpatialRef, 5080, lu);
+			
+			qry.setGeometry(buffer);
+			qry.setMaxFeatures(20);
+			QueryTask getNearbyRoutes = new QueryTask("http://gis.phila.gov/ArcGIS/rest/services/PhilaOIT-GIS_Transportation/MapServer/0");
+			
+			try {
+				FeatureSet gotNearbyRoutes = getNearbyRoutes.execute(qry);
+				
+				JSONObject routesObj = new JSONObject(FeatureSet.toJson(gotNearbyRoutes));
+				
+				Log.d("gotNearbyRoutes", routesObj.toString());
+				
+				JSONArray routes = null;
+				
+				// if no results, get no value for features
+				if (routesObj.has("features")) {
+					routes = routesObj.getJSONArray("features");
+				}
+				
+				JSONObject row = null;
+				JSONObject geom = null;
+				JSONObject attr = null;
+				JSONArray paths = null;
+				JSONArray path = null;
+				PolylineOptions opt = null;
+				JSONArray pt = null;
+				
+				if (routes != null) {
+					for (int i = routes.length(); i--> 0; ) {
+						row = routes.getJSONObject(i);
+						geom = row.getJSONObject("geometry");
+						attr = row.getJSONObject("attributes");
+						
+						paths = geom.getJSONArray("paths");
+						opt = new PolylineOptions();
+						
+						for (int j = paths.length(); j--> 0; ) {
+							path = paths.getJSONArray(j);
+							for (int k = path.length(); k--> 0; ) {
+								pt = path.getJSONArray(k);
+								opt.add(new LatLng(pt.getDouble(1), pt.getDouble(0)));
+							}
+						}
+						
+						route_options.add(opt);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return route_options;
+		}
+		
+		@Override
+		protected void onPostExecute(ArrayList<PolylineOptions> routes) {
+			if (routes != null) {
+				for (int i = routes.size(); i--> 0; ) {
+					mMap.addPolyline(routes.get(i));
+				}
+			}
 		}
 	}
 }
