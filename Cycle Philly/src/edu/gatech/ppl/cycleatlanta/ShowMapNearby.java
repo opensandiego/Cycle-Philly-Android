@@ -261,7 +261,7 @@ public class ShowMapNearby extends FragmentActivity {
 						}
 						
 						snippetStr += "Type: " + 
-								attr.getString("RACK_TYPE") + "\nNumber: " + 
+								attr.getString("RACK_TYPE") + "\nNumber of racks: " + 
 								attr.getInt("NUM_RACKS"); 
 						
 						rack_markers.add(new MarkerOptions()
