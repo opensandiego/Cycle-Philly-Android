@@ -70,13 +70,16 @@ public class ShowMapNearby extends FragmentActivity {
         t1.setText("Bicycle Parking");
         t3.setText("loading...");
         
+        /*
         if (loc != null) {
         	mySpot = new LatLng(loc.getLatitude(), loc.getLongitude());
         } else {
         	mySpot = new LatLng(39.952451,-75.163664); // city hall by default
         	t2.setText("Current location not found; enable GPS to search nearby.");
         	// TODO: show message to tell user to enable location svcs and try again
-        }
+        }*/
+        
+        mySpot = new LatLng(39.952451,-75.163664);
 		
 		//mySpot = new LatLng(39.924877,-75.158871);
 		/////////////////
@@ -236,7 +239,7 @@ public class ShowMapNearby extends FragmentActivity {
 							snippetStr = "";
 						}
 						
-						snippetStr += "\nType: " + 
+						snippetStr += "Type: " + 
 								attr.getString("RACK_TYPE") + "\nNumber of racks: " + 
 								attr.getInt("NUM_RACKS"); 
 						
