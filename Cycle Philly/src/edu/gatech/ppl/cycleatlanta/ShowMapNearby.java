@@ -1,6 +1,7 @@
 package edu.gatech.ppl.cycleatlanta;
 
 import java.util.ArrayList;
+
 import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.SpatialReference;
@@ -9,7 +10,10 @@ import com.esri.core.map.FeatureSet;
 import com.esri.core.tasks.SpatialRelationship;
 import com.esri.core.tasks.ags.query.*;
 import com.esri.core.geometry.GeometryEngine;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
+
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
@@ -21,11 +25,15 @@ import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.LinearLayout;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import edu.gatech.ppl.cycleatlanta.R;
 
 public class ShowMapNearby extends FragmentActivity {
@@ -62,7 +70,7 @@ public class ShowMapNearby extends FragmentActivity {
 			        layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 			        
 			        // Center & zoom the map after map layout completes
-			        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mySpot, 17));
+			        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mySpot, 15));
 			    }
 			});
 		} else {
@@ -88,6 +96,7 @@ public class ShowMapNearby extends FragmentActivity {
 			ArrayList<MarkerOptions> rack_markers;
 			rack_markers = new ArrayList<MarkerOptions>();
 			LatLng myLoc = ShowMapNearby.this.mySpot;
+			
 			SpatialReference mercator = SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR);
 			SpatialReference sr = SpatialReference.create(4326);
 			
@@ -118,12 +127,55 @@ public class ShowMapNearby extends FragmentActivity {
 				FeatureSet gotCityRacks = getCityRacks.execute(qry);
 				FeatureSet gotAdoptedRacks = getAdoptedRacks.execute(qry);
 				
-				JSONObject city = new JSONObject(FeatureSet.toJson(gotCityRacks));
-				JSONObject adopted = new JSONObject(FeatureSet.toJson(gotAdoptedRacks));
+				JSONObject cityObj = new JSONObject(FeatureSet.toJson(gotCityRacks));
+				JSONObject adoptedObj = new JSONObject(FeatureSet.toJson(gotAdoptedRacks));
 				
-				Log.d("gotCityRacks", city.toString());
-				Log.d("gotAdoptedRacks", adopted.toString());
+				Log.d("gotCityRacks", cityObj.toString());
+				Log.d("gotAdoptedRacks", adoptedObj.toString());
 				
+				JSONArray city = cityObj.getJSONArray("features");
+				JSONArray adopted = adoptedObj.getJSONArray("features");
+				
+				JSONObject row;
+				JSONObject geom;
+				JSONObject attr;
+				String snippetStr;
+				BitmapDescriptor cityIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+				BitmapDescriptor adoptedIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA);
+				
+				rack_markers = new ArrayList<MarkerOptions>(city.length() + adopted.length());
+				
+				for (int i = city.length(); i--> 0; ) {
+					row = city.getJSONObject(i);
+					geom = row.getJSONObject("geometry");
+					attr = row.getJSONObject("attributes");
+					
+					snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + "\n\nType: " + 
+							attr.getString("RACK_TYPE") + "\n\nNumber: " + 
+							attr.getInt("NUM_RACKS"); 
+					
+					rack_markers.add(new MarkerOptions()
+						.position(new LatLng(geom.getDouble("y"), geom.getDouble("x")))
+						.title(attr.getString("LOCATION"))
+						.snippet(snippetStr)
+						.icon(cityIcon));
+				}
+				
+				for (int i = adopted.length(); i--> 0; ) {
+					row = adopted.getJSONObject(i);
+					geom = row.getJSONObject("geometry");
+					attr = row.getJSONObject("attributes");
+					
+					snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + "\n\nType: " + 
+							attr.getString("RACK_TYPE") + "\n\nNumber: " + 
+							attr.getInt("NUM_RACKS"); 
+					
+					rack_markers.add(new MarkerOptions()
+						.position(new LatLng(geom.getDouble("y"), geom.getDouble("x")))
+						.title(attr.getString("LOCATION"))
+						.snippet(snippetStr)
+						.icon(adoptedIcon));
+				}
 				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -137,6 +189,9 @@ public class ShowMapNearby extends FragmentActivity {
 		@Override
 		protected void onPostExecute(ArrayList<MarkerOptions> racks) {
 			// TODO:
+			for (int i = racks.size(); i--> 0; ) {
+				mMap.addMarker(racks.get(i));
+			}
 		}
 	}
 }
