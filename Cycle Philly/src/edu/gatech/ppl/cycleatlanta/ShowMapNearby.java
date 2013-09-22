@@ -1,5 +1,8 @@
 package edu.gatech.ppl.cycleatlanta;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import com.esri.core.geometry.Geometry;
@@ -22,16 +25,21 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.gatech.ppl.cycleatlanta.R;
@@ -41,24 +49,34 @@ public class ShowMapNearby extends FragmentActivity {
 	private LinearLayout layout;
 	private LocationManager lm = null;
 	private LatLng mySpot = null;
+	TextView t1;
+    TextView t2; 
+    TextView t3;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nearbymapview);
+		
+		t1 = (TextView) findViewById(R.id.TextViewT1);
+		t2 = (TextView) findViewById(R.id.TextViewT2);
+		t3 = (TextView) findViewById(R.id.TextViewT3);
 	
 		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
 		Location loc = lm.getLastKnownLocation(lm.getBestProvider(criteria, false));
-        
 		
+        t1.setText("Bicycle Parking");
+        t3.setText("loading...");
+        
         if (loc != null) {
         	mySpot = new LatLng(loc.getLatitude(), loc.getLongitude());
         } else {
         	mySpot = new LatLng(39.952451,-75.163664); // city hall by default
+        	t2.setText("Current location not found; enable GPS to search nearby.");
+        	// TODO: show message to tell user to enable location svcs and try again
         }
-        
 		
 		//mySpot = new LatLng(39.924877,-75.158871);
 		/////////////////
@@ -89,8 +107,36 @@ public class ShowMapNearby extends FragmentActivity {
 			return;
 		}
 		
+		mMap.setInfoWindowAdapter(new BikeRackInfoWindow(getLayoutInflater()));
 		AddRacksToMapLayerTask add_racks = new AddRacksToMapLayerTask();
 		add_racks.execute(mySpot);
+		
+	}
+	
+	private class BikeRackInfoWindow implements InfoWindowAdapter {
+		LayoutInflater inflater=null;
+		
+		BikeRackInfoWindow(LayoutInflater inflater) {
+			this.inflater=inflater;
+		}
+
+		@Override
+		public View getInfoContents(Marker marker) {
+			View popup=inflater.inflate(R.layout.popup, null);
+
+		    TextView tv=(TextView)popup.findViewById(R.id.title);
+
+		    tv.setText(marker.getTitle());
+		    tv=(TextView)popup.findViewById(R.id.snippet);
+		    tv.setText(marker.getSnippet());
+
+		    return(popup);
+		}
+
+		@Override
+		public View getInfoWindow(Marker marker) {
+			return null;
+		}
 		
 	}
 	
@@ -101,6 +147,16 @@ public class ShowMapNearby extends FragmentActivity {
 			ArrayList<MarkerOptions> rack_markers;
 			rack_markers = new ArrayList<MarkerOptions>();
 			LatLng myLoc = centers[0];
+			
+			/*
+			 try {
+				BufferedReader reader = new BufferedReader(
+					        new InputStreamReader(getAssets().open("foo")));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			*/
 			
 			SpatialReference mercator = SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR);
 			SpatialReference sr = SpatialReference.create(4326);
@@ -125,7 +181,7 @@ public class ShowMapNearby extends FragmentActivity {
 			buffer = GeometryEngine.buffer(reprojPt, serverSpatialRef, 2540, lu);
 			
 			qry.setGeometry(buffer);
-			qry.setMaxFeatures(25); // show max 50 nearby racks (if 25 from each service)
+			qry.setMaxFeatures(50); // show max 100 nearby racks (if 50 from each service)
 			QueryTask getCityRacks = new QueryTask("http://gis.phila.gov/ArcGIS/rest/services/Streets/Bike_Racks/MapServer/0");
 			QueryTask getAdoptedRacks = new QueryTask("http://gis.phila.gov/ArcGIS/rest/services/Streets/Bike_Racks/MapServer/1");
 			
@@ -165,7 +221,6 @@ public class ShowMapNearby extends FragmentActivity {
 				} else if (adopted != null) {
 					rack_markers = new ArrayList<MarkerOptions>(adopted.length());
 				} else {
-					// TODO: no results.  show message
 					Log.d("get bike racks", "no results found");
 				}
 				
@@ -175,8 +230,14 @@ public class ShowMapNearby extends FragmentActivity {
 						geom = row.getJSONObject("geometry");
 						attr = row.getJSONObject("attributes");
 						
-						snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + "\n\nType: " + 
-								attr.getString("RACK_TYPE") + "\n\nNumber: " + 
+						if (attr.getString("SIDEWALK").replace(" ",  "").length() > 0) {
+							snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + '\n';
+						} else {
+							snippetStr = "";
+						}
+						
+						snippetStr += "\nType: " + 
+								attr.getString("RACK_TYPE") + "\nNumber of racks: " + 
 								attr.getInt("NUM_RACKS"); 
 						
 						rack_markers.add(new MarkerOptions()
@@ -193,8 +254,14 @@ public class ShowMapNearby extends FragmentActivity {
 						geom = row.getJSONObject("geometry");
 						attr = row.getJSONObject("attributes");
 						
-						snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + "\n\nType: " + 
-								attr.getString("RACK_TYPE") + "\n\nNumber: " + 
+						if (attr.getString("SIDEWALK").replace(" ",  "").length() > 0) {
+							snippetStr = "Sidewalk: " + attr.getString("SIDEWALK") + '\n';
+						} else {
+							snippetStr = "";
+						}
+						
+						snippetStr += "Type: " + 
+								attr.getString("RACK_TYPE") + "\nNumber: " + 
 								attr.getInt("NUM_RACKS"); 
 						
 						rack_markers.add(new MarkerOptions()
@@ -205,8 +272,6 @@ public class ShowMapNearby extends FragmentActivity {
 					}
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				//Log.e("Async get FeatureSets", e.getMessage());
 				e.printStackTrace();
 			}
 			
@@ -220,7 +285,13 @@ public class ShowMapNearby extends FragmentActivity {
 				for (int i = racks.size(); i--> 0; ) {
 					mMap.addMarker(racks.get(i));
 				}
+				
+				t2.setText("found " + racks.size() + " bike racks within 1/2 mile");
+			} else {
+				t2.setText("No bike racks found within 1/2 mile.");
 			}
+			
+			t3.setText("");
 		}
 	}
 }
