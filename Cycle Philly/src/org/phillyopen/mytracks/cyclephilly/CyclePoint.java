@@ -28,16 +28,35 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
-public interface IRecordService {
-	public int  getState();
-	public void startRecording(TripData trip);
-	public void cancelRecording();
-	public long finishRecording(); // returns trip-id
-	public long getCurrentTrip();  // returns trip-id
-	public void pauseRecording();
-	public void resumeRecording();
-	public void reset();
-	public void setListener(RecordingActivity ra);
+import com.google.android.gms.maps.model.LatLng;
+
+class CyclePoint {
+
+	public LatLng coords;
+	public float accuracy;
+	public double altitude;
+	public float speed;
+	public double time;
+
+    public CyclePoint(double lat, double lgt, double currentTime) {
+    	coords = new LatLng(lat, lgt);
+      this.time = currentTime;
+    }
+
+    public CyclePoint(double lat, double lgt, double currentTime, float accuracy) {
+        coords = new LatLng(lat, lgt);
+        this.time = currentTime;
+        this.accuracy = accuracy;
+    }
+
+	public CyclePoint(double lat, double lgt, double currentTime, float accuracy, double altitude, float speed) {
+		coords = new LatLng(lat, lgt);
+		this.time = currentTime;
+		this.accuracy = accuracy;
+		this.altitude = altitude;
+		this.speed = speed;
+	}
 }
+

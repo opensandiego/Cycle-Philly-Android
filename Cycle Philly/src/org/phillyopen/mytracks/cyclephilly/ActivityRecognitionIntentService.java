@@ -1,4 +1,4 @@
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;

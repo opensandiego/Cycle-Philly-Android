@@ -28,13 +28,14 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.Settings.System;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
@@ -278,6 +279,11 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             String responseString = convertStreamToString(response.getEntity().getContent());
             //Log.v("httpResponse", responseString);
             JSONObject responseData = new JSONObject(responseString);
+            
+            ////////////////////////////
+            Log.d("server response", responseData.toString());
+            ///////////////////////////
+            
             if (responseData.getString("status").equals("success")) {
                 mDb.open();
                 mDb.updateTripStatus(currentTripId, TripData.STATUS_SENT);

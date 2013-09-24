@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -66,6 +66,8 @@ import java.util.Map;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import edu.gatech.ppl.cycleatlanta.R;
 
 public class MainInput extends FragmentActivity {
     private final static int MENU_USER_INFO = 0;

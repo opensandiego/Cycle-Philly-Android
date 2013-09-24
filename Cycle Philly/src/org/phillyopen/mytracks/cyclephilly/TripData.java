@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import java.text.DateFormat;
 import java.util.ArrayList;

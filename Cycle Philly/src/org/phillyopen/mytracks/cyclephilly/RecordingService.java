@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -48,6 +48,8 @@ import android.os.IBinder;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import edu.gatech.ppl.cycleatlanta.R;
 
 public class RecordingService extends Service implements LocationListener {
 	RecordingActivity recordActivity;

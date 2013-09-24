@@ -29,7 +29,7 @@
  */
 
 
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import android.content.ContentValues;
 import android.content.Context;

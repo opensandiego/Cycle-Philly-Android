@@ -1,4 +1,4 @@
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import android.app.Dialog;
 import android.os.Bundle;

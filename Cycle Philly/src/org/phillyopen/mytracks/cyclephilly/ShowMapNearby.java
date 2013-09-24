@@ -1,4 +1,4 @@
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import java.util.ArrayList;
 
@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -38,7 +39,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import edu.gatech.ppl.cycleatlanta.R;
@@ -356,7 +356,8 @@ public class ShowMapNearby extends FragmentActivity {
 						attr = row.getJSONObject("attributes");
 						
 						paths = geom.getJSONArray("paths");
-						opt = new PolylineOptions();
+						opt = new PolylineOptions()
+							.color(Color.BLUE);
 						
 						for (int j = paths.length(); j--> 0; ) {
 							path = paths.getJSONArray(j);

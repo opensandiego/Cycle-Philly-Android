@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 //
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -54,6 +54,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import edu.gatech.ppl.cycleatlanta.R;
 
 public class ShowMap extends FragmentActivity {
 	List<Polyline> mapTracks;

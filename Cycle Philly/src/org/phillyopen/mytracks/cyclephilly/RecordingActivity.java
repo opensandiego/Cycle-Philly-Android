@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -56,6 +56,8 @@ import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallback
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.ActivityRecognitionClient;
+
+import edu.gatech.ppl.cycleatlanta.R;
 
 public class RecordingActivity extends FragmentActivity implements ConnectionCallbacks, OnConnectionFailedListener {
 	

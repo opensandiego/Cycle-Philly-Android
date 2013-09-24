@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package edu.gatech.ppl.cycleatlanta;
+package org.phillyopen.mytracks.cyclephilly;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import edu.gatech.ppl.cycleatlanta.R;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
