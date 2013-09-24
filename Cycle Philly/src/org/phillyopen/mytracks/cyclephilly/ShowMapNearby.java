@@ -41,7 +41,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import edu.gatech.ppl.cycleatlanta.R;
+import org.phillyopen.mytracks.cyclephilly.R;
 
 public class ShowMapNearby extends FragmentActivity {
 	private GoogleMap mMap;

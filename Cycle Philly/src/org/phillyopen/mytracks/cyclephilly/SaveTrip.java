@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import edu.gatech.ppl.cycleatlanta.R;
+import org.phillyopen.mytracks.cyclephilly.R;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;

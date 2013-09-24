@@ -49,7 +49,7 @@ import android.os.IBinder;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import edu.gatech.ppl.cycleatlanta.R;
+import org.phillyopen.mytracks.cyclephilly.R;
 
 public class RecordingService extends Service implements LocationListener {
 	RecordingActivity recordActivity;

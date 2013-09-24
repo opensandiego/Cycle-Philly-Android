@@ -21,7 +21,7 @@ package org.phillyopen.mytracks.cyclephilly;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import edu.gatech.ppl.cycleatlanta.R;
+import org.phillyopen.mytracks.cyclephilly.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;

@@ -67,7 +67,7 @@ import java.util.Map;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-import edu.gatech.ppl.cycleatlanta.R;
+import org.phillyopen.mytracks.cyclephilly.R;
 
 public class MainInput extends FragmentActivity {
     private final static int MENU_USER_INFO = 0;

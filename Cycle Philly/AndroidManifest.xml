@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.gatech.ppl.cycleatlanta"
+    package="org.phillyopen.mytracks.cyclephilly"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -9,10 +9,10 @@
         android:targetSdkVersion="11" />
     
     <permission
-         android:name="edu.gatech.ppl.cycleatlanta.permission.MAPS_RECEIVE"
+         android:name="org.phillyopen.mytracks.cyclephilly.permission.MAPS_RECEIVE"
          android:protectionLevel="signature"/>
     
-	<uses-permission  android:name="edu.gatech.ppl.cycleatlanta.permission.MAPS_RECEIVE"/>
+	<uses-permission  android:name="org.phillyopen.mytracks.cyclephilly.permission.MAPS_RECEIVE"/>
 	<uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

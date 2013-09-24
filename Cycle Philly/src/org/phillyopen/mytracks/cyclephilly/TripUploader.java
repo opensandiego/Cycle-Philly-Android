@@ -262,6 +262,11 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         List<NameValuePair> nameValuePairs;
         try {
             nameValuePairs = getPostData(currentTripId);
+            
+            ///////////////////////////////////////////////////
+            Log.d("sending data", nameValuePairs.toString());
+            ////////////////////////////////////////////////////
+            
         } catch (JSONException e) {
             e.printStackTrace();
             return result;
