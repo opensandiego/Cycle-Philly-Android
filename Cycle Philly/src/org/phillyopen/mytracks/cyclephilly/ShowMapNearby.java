@@ -1,8 +1,6 @@
 package org.phillyopen.mytracks.cyclephilly;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
 import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
@@ -17,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -41,7 +38,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.TileOverlayOptions;
 
 import org.phillyopen.mytracks.cyclephilly.R;
 
@@ -109,12 +106,15 @@ public class ShowMapNearby extends FragmentActivity {
 		}
 		
 		mMap.setInfoWindowAdapter(new BikeRackInfoWindow(getLayoutInflater()));
+		
+		// use mapbox map with base layer
+		TileOverlayOptions tileOpts = new TileOverlayOptions();
+		tileOpts.tileProvider(new MapTileProvider("banderkat.map-xdg8ubm7"));
+		mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
+		mMap.addTileOverlay(tileOpts);
+		
 		AddRacksToMapLayerTask add_racks = new AddRacksToMapLayerTask();
 		add_racks.execute(mySpot);
-		
-		AddRoutesToMapLayerTask add_routes = new AddRoutesToMapLayerTask();
-		add_routes.execute(mySpot);
-		
 	}
 	
 	private class BikeRackInfoWindow implements InfoWindowAdapter {
@@ -281,136 +281,6 @@ public class ShowMapNearby extends FragmentActivity {
 			}
 			
 			t3.setText("");
-		}
-	}
-	
-	private class AddRoutesToMapLayerTask extends AsyncTask<LatLng, Void, HashMap<String, PolylineOptions>> {
-
-		@Override
-		protected HashMap<String, PolylineOptions> doInBackground(LatLng... centers) {
-			HashMap<String, PolylineOptions> route_options;
-			route_options = new HashMap<String, PolylineOptions>();
-			LatLng myLoc = centers[0];
-			
-			SpatialReference sr = SpatialReference.create(4326);
-			SpatialReference serverSpatialRef = SpatialReference.create(3857);
-			
-			Query qry = new Query();
-			qry.setInSpatialReference(serverSpatialRef);
-			qry.setOutSpatialReference(sr);
-			qry.setReturnGeometry(true);
-			qry.setSpatialRelationship(SpatialRelationship.CONTAINS);
-			qry.setReturnIdsOnly(false);
-			
-			String[] flds = {"STREETNAME", "ST_CODE", "ONEWAY", "TYPE", "CLASS", "SHAPE"};
-			qry.setOutFields(flds);
-			
-			Geometry buffer = null;
-			Unit lu = Unit.create(9003);
-			
-			Point reprojPt = GeometryEngine.project(myLoc.longitude, myLoc.latitude, serverSpatialRef);
-			
-			// 1 mi - 5080
-			// 4 mi - 20320
-			buffer = GeometryEngine.buffer(reprojPt, serverSpatialRef, 10160, lu);
-			
-			qry.setGeometry(buffer);
-			qry.setMaxFeatures(20);
-			QueryTask getNearbyRoutes = new QueryTask("http://gis.phila.gov/ArcGIS/rest/services/PhilaOIT-GIS_Transportation/MapServer/0");
-			
-			try {
-				FeatureSet gotNearbyRoutes = getNearbyRoutes.execute(qry);
-				
-				JSONObject routesObj = new JSONObject(FeatureSet.toJson(gotNearbyRoutes));
-				
-				Log.d("gotNearbyRoutes", routesObj.toString());
-				
-				JSONArray routes = null;
-				
-				// if no results, get no value for features
-				if (routesObj.has("features")) {
-					routes = routesObj.getJSONArray("features");
-				}
-				
-				JSONObject row = null;
-				JSONObject geom = null;
-				JSONObject attr = null;
-				JSONArray paths = null;
-				JSONArray path = null;
-				PolylineOptions opt = null;
-				JSONArray pt = null;
-				String st_code = null;
-				int use_color = 0;
-				Integer path_class = null;
-				
-				// segments with matching ST_CODE belong to the same polyline
-				
-				if (routes != null) {
-					for (int i = routes.length(); i--> 0; ) {
-						row = routes.getJSONObject(i);
-						geom = row.getJSONObject("geometry");
-						attr = row.getJSONObject("attributes");
-						st_code = attr.getString("ST_CODE");
-						path_class = attr.getInt("CLASS");
-						paths = geom.getJSONArray("paths");
-						
-						if (route_options.containsKey(st_code)) {
-							// got polyline already
-							opt = route_options.get(st_code);
-						} else {
-							switch (path_class) {
-								case 1: 
-									use_color = Color.GREEN;
-									break;
-								case 2:
-									use_color = Color.CYAN;
-									break;
-								case 3:
-									use_color = Color.BLUE;
-									break;
-								case 4:
-									use_color = Color.YELLOW;
-									break;
-								case 5:
-									use_color = Color.MAGENTA;
-								case 9:
-									use_color = Color.RED;
-									break;
-								default:
-									use_color = Color.DKGRAY;
-									break;
-							}
-							
-							opt = new PolylineOptions()
-								.color(use_color);
-						}
-						
-						for (int j = paths.length(); j--> 0; ) {
-							path = paths.getJSONArray(j);
-							for (int k = path.length(); k--> 0; ) {
-								pt = path.getJSONArray(k);
-								opt.add(new LatLng(pt.getDouble(1), pt.getDouble(0)));
-							}
-						}
-						
-						route_options.put(st_code, opt);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			return route_options;
-		}
-		
-		@Override
-		protected void onPostExecute(HashMap<String, PolylineOptions> routes) {
-			if (routes != null) {
-				Iterator<String> routesKeys = routes.keySet().iterator();
-				while (routesKeys.hasNext()) {
-					mMap.addPolyline(routes.get(routesKeys.next()));
-				}
-			}
 		}
 	}
 }
