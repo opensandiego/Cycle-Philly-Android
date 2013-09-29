@@ -1,6 +1,8 @@
 package org.phillyopen.mytracks.cyclephilly;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
@@ -77,6 +79,7 @@ public class ShowMapNearby extends FragmentActivity {
         	// show message to tell user to enable location svcs and try again
         }
 		
+        // test location in S Philly
 		//mySpot = new LatLng(39.924877,-75.158871);
 		/////////////////
 		
@@ -149,17 +152,6 @@ public class ShowMapNearby extends FragmentActivity {
 			rack_markers = new ArrayList<MarkerOptions>();
 			LatLng myLoc = centers[0];
 			
-			/*
-			 try {
-				BufferedReader reader = new BufferedReader(
-					        new InputStreamReader(getAssets().open("foo")));
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			*/
-			
-			//SpatialReference mercator = SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR);
 			SpatialReference sr = SpatialReference.create(4326);
 			SpatialReference serverSpatialRef = SpatialReference.create(2272);
 			
@@ -192,9 +184,6 @@ public class ShowMapNearby extends FragmentActivity {
 				
 				JSONObject cityObj = new JSONObject(FeatureSet.toJson(gotCityRacks));
 				JSONObject adoptedObj = new JSONObject(FeatureSet.toJson(gotAdoptedRacks));
-				
-				//Log.d("gotCityRacks", cityObj.toString());
-				//Log.d("gotAdoptedRacks", adoptedObj.toString());
 				
 				JSONArray city = null;
 				JSONArray adopted = null;
@@ -295,12 +284,12 @@ public class ShowMapNearby extends FragmentActivity {
 		}
 	}
 	
-	private class AddRoutesToMapLayerTask extends AsyncTask<LatLng, Void, ArrayList<PolylineOptions>> {
+	private class AddRoutesToMapLayerTask extends AsyncTask<LatLng, Void, HashMap<String, PolylineOptions>> {
 
 		@Override
-		protected ArrayList<PolylineOptions> doInBackground(LatLng... centers) {
-			ArrayList<PolylineOptions> route_options;
-			route_options = new ArrayList<PolylineOptions>();
+		protected HashMap<String, PolylineOptions> doInBackground(LatLng... centers) {
+			HashMap<String, PolylineOptions> route_options;
+			route_options = new HashMap<String, PolylineOptions>();
 			LatLng myLoc = centers[0];
 			
 			SpatialReference sr = SpatialReference.create(4326);
@@ -313,7 +302,7 @@ public class ShowMapNearby extends FragmentActivity {
 			qry.setSpatialRelationship(SpatialRelationship.CONTAINS);
 			qry.setReturnIdsOnly(false);
 			
-			String[] flds = {"STREETNAME", "ONEWAY", "TYPE", "CLASS", "SHAPE"};
+			String[] flds = {"STREETNAME", "ST_CODE", "ONEWAY", "TYPE", "CLASS", "SHAPE"};
 			qry.setOutFields(flds);
 			
 			Geometry buffer = null;
@@ -321,7 +310,9 @@ public class ShowMapNearby extends FragmentActivity {
 			
 			Point reprojPt = GeometryEngine.project(myLoc.longitude, myLoc.latitude, serverSpatialRef);
 			
-			buffer = GeometryEngine.buffer(reprojPt, serverSpatialRef, 5080, lu);
+			// 1 mi - 5080
+			// 4 mi - 20320
+			buffer = GeometryEngine.buffer(reprojPt, serverSpatialRef, 10160, lu);
 			
 			qry.setGeometry(buffer);
 			qry.setMaxFeatures(20);
@@ -348,16 +339,51 @@ public class ShowMapNearby extends FragmentActivity {
 				JSONArray path = null;
 				PolylineOptions opt = null;
 				JSONArray pt = null;
+				String st_code = null;
+				int use_color = 0;
+				Integer path_class = null;
+				
+				// segments with matching ST_CODE belong to the same polyline
 				
 				if (routes != null) {
 					for (int i = routes.length(); i--> 0; ) {
 						row = routes.getJSONObject(i);
 						geom = row.getJSONObject("geometry");
 						attr = row.getJSONObject("attributes");
-						
+						st_code = attr.getString("ST_CODE");
+						path_class = attr.getInt("CLASS");
 						paths = geom.getJSONArray("paths");
-						opt = new PolylineOptions()
-							.color(Color.BLUE);
+						
+						if (route_options.containsKey(st_code)) {
+							// got polyline already
+							opt = route_options.get(st_code);
+						} else {
+							switch (path_class) {
+								case 1: 
+									use_color = Color.GREEN;
+									break;
+								case 2:
+									use_color = Color.CYAN;
+									break;
+								case 3:
+									use_color = Color.BLUE;
+									break;
+								case 4:
+									use_color = Color.YELLOW;
+									break;
+								case 5:
+									use_color = Color.MAGENTA;
+								case 9:
+									use_color = Color.RED;
+									break;
+								default:
+									use_color = Color.DKGRAY;
+									break;
+							}
+							
+							opt = new PolylineOptions()
+								.color(use_color);
+						}
 						
 						for (int j = paths.length(); j--> 0; ) {
 							path = paths.getJSONArray(j);
@@ -367,7 +393,7 @@ public class ShowMapNearby extends FragmentActivity {
 							}
 						}
 						
-						route_options.add(opt);
+						route_options.put(st_code, opt);
 					}
 				}
 			} catch (Exception e) {
@@ -378,10 +404,11 @@ public class ShowMapNearby extends FragmentActivity {
 		}
 		
 		@Override
-		protected void onPostExecute(ArrayList<PolylineOptions> routes) {
+		protected void onPostExecute(HashMap<String, PolylineOptions> routes) {
 			if (routes != null) {
-				for (int i = routes.size(); i--> 0; ) {
-					mMap.addPolyline(routes.get(i));
+				Iterator<String> routesKeys = routes.keySet().iterator();
+				while (routesKeys.hasNext()) {
+					mMap.addPolyline(routes.get(routesKeys.next()));
 				}
 			}
 		}

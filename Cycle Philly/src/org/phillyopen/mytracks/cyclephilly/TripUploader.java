@@ -122,9 +122,17 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             coord.put(TRIP_COORDS_TIME,
             		df.format(tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_TIME))));
             coord.put(TRIP_COORDS_LAT,
+            		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_LAT)));
+            coord.put(TRIP_COORDS_LON,
+            		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_LON)));
+            
+            /*
+            coord.put(TRIP_COORDS_LAT,
             		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_LAT)) / 1E6);
             coord.put(TRIP_COORDS_LON,
             		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_LON)) / 1E6);
+            */
+            
             coord.put(TRIP_COORDS_ALT,
             		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_ALT)));
             coord.put(TRIP_COORDS_SPEED,
