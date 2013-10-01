@@ -65,8 +65,8 @@ public class ShowMapNearby extends FragmentActivity {
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
 		Location loc = lm.getLastKnownLocation(lm.getBestProvider(criteria, false));
 		
-        t1.setText("Bicycle Parking");
-        t3.setText("loading...");
+        t1.setText("Bicycle Racks and Parking");
+        //t3.setText("loading...");
         
         if (loc != null) {
         	mySpot = new LatLng(loc.getLatitude(), loc.getLongitude());
@@ -108,13 +108,21 @@ public class ShowMapNearby extends FragmentActivity {
 		mMap.setInfoWindowAdapter(new BikeRackInfoWindow(getLayoutInflater()));
 		
 		// use mapbox map with base layer
-		TileOverlayOptions tileOpts = new TileOverlayOptions();
-		tileOpts.tileProvider(new MapTileProvider("banderkat.map-xdg8ubm7"));
-		mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
-		mMap.addTileOverlay(tileOpts);
+		//TileOverlayOptions tileOpts = new TileOverlayOptions();
+		//tileOpts.tileProvider(new MapTileProvider("banderkat.map-xdg8ubm7"));
+		//mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
+		//mMap.addTileOverlay(tileOpts);
 		
-		AddRacksToMapLayerTask add_racks = new AddRacksToMapLayerTask();
-		add_racks.execute(mySpot);
+		TileOverlayOptions racksOpts = new TileOverlayOptions();
+		racksOpts.tileProvider(new MapTileProvider("banderkat.philly_bikeracks"));
+		TileOverlayOptions routesOpts = new TileOverlayOptions();
+		routesOpts.tileProvider(new MapTileProvider("banderkat.philly_bikeroutes"));
+		
+		mMap.addTileOverlay(routesOpts);
+		mMap.addTileOverlay(racksOpts);
+		
+		//AddRacksToMapLayerTask add_racks = new AddRacksToMapLayerTask();
+		//add_racks.execute(mySpot);
 	}
 	
 	private class BikeRackInfoWindow implements InfoWindowAdapter {
