@@ -35,6 +35,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.Settings.System;
+import android.provider.Settings.Secure;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -92,7 +94,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
     }
 
     private JSONObject getCoordsJSON(long tripId) throws JSONException {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
         mDb.openReadOnly();
         Cursor tripCoordsCursor = mDb.fetchAllCoordsForTrip(tripId);
@@ -125,14 +127,6 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_LAT)));
             coord.put(TRIP_COORDS_LON,
             		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_LON)));
-            
-            /*
-            coord.put(TRIP_COORDS_LAT,
-            		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_LAT)) / 1E6);
-            coord.put(TRIP_COORDS_LON,
-            		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_LON)) / 1E6);
-            */
-            
             coord.put(TRIP_COORDS_ALT,
             		tripCoordsCursor.getDouble(fieldMap.get(TRIP_COORDS_ALT)));
             coord.put(TRIP_COORDS_SPEED,
@@ -166,8 +160,11 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         }
         user.put(USER_AGE, settings.getInt("" + UserInfoActivity.PREF_AGE, 0));
         user.put(USER_GENDER, settings.getInt("" + UserInfoActivity.PREF_GENDER, 0));
-        user.put(USER_CYCLING_FREQUENCY, settings.getInt("" + UserInfoActivity.PREF_GENDER, 0)/100);
+        
+        // TODO: setting cycling frequency properly?
+        user.put(USER_CYCLING_FREQUENCY, settings.getInt("" + UserInfoActivity.PREF_CYCLEFREQ, 0));
         //Integer.parseInt(settings.getString(""+UserInfoActivity.PREF_CYCLEFREQ, "0"))
+        
         user.put(USER_ETHNICITY, settings.getInt("" + UserInfoActivity.PREF_ETHNICITY, 0));
         user.put(USER_INCOME, settings.getInt("" + UserInfoActivity.PREF_INCOME, 0));
         user.put(USER_RIDERTYPE, settings.getInt("" + UserInfoActivity.PREF_RIDERTYPE, 0));
@@ -192,7 +189,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         tripCursor.close();
         mDb.close();
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
         tripData.add(note);
         tripData.add(purpose);
         tripData.add(df.format(startTime));
@@ -202,10 +199,10 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
     }
 
     public String getDeviceId() {
-        String androidId = System.getString(this.mCtx.getContentResolver(),
-                System.ANDROID_ID);
+        String androidId = System.getString(this.mCtx.getContentResolver(), 
+        		Secure.ANDROID_ID);
         String androidBase = "androidDeviceId-";
-
+        
         if (androidId == null) { // This happens when running in the Emulator
             final String emulatorId = "android-RunningAsTestingDeleteMe";
             return emulatorId;
@@ -320,6 +317,10 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
     protected Boolean doInBackground(Long... tripid) {
         // First, send the trip user asked for:
         Boolean result = uploadOneTrip(tripid[0]);
+        
+        // TODO: not always working. Server checks for device ID length of 32
+        Log.d("uploading trip", tripid[0].toString());
+        //////////////////////////////////////////////
 
         // Then, automatically try and send previously-completed trips
         // that were not sent successfully.
