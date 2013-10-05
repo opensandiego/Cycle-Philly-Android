@@ -62,5 +62,8 @@
 	    <item>One year or less</item>
 	    <item>Just trying it out / just started</item>
 	</string-array>
+	
+	<string name="nearbyRacksRoutes">Nearby Bike Racks and Routes:</string>
+	<string name="mapOfTrip">Map of your trip:</string>
 
 </resources>

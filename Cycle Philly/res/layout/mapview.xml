@@ -10,7 +10,7 @@
 		<TextView android:id="@+id/TextViewT1"
 			android:layout_height="wrap_content" android:layout_width="wrap_content"
 			android:layout_alignParentLeft="true" android:layout_marginLeft="2sp"
-			android:textSize="20sp" android:textStyle="bold" android:text="Map of your trip:"></TextView>
+			android:textSize="20sp" android:textStyle="bold" android:text="@string/mapOfTrip"></TextView>
 		<TextView android:id="@+id/TextViewT3"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:layout_alignParentRight="true" android:textSize="20sp"
@@ -25,6 +25,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
-	/>
 </LinearLayout>
 

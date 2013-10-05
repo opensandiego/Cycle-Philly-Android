@@ -17,7 +17,7 @@
             android:layout_marginLeft="12sp"
             android:layout_marginRight="5sp"
             android:layout_marginTop="5sp"
-            android:text="Thanks for using Cycle Atlanta! Please enter your user details here. It&apos;s optional, anonymous, and will really help us understand different people&apos;s biking preferences." >
+            android:text="Thanks for using Cycle Philly! Please enter your user details here. It&apos;s optional, anonymous, and will really help us understand different people&apos;s biking preferences." >
         </TextView>
 
         <LinearLayout

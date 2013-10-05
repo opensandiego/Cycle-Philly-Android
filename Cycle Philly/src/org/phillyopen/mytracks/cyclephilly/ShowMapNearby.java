@@ -1,6 +1,8 @@
 package org.phillyopen.mytracks.cyclephilly;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -11,7 +13,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.LinearLayout;
@@ -73,7 +78,6 @@ public class ShowMapNearby extends FragmentActivity {
     		
     		if (loc == null) {
 	        	mySpot = new LatLng(39.952451,-75.163664); // city hall by default
-	        	t2.setText("Current location not found; enable GPS to search nearby.");
     		}
         }
 		
@@ -123,52 +127,75 @@ public class ShowMapNearby extends FragmentActivity {
 		racksOverlay = mMap.addTileOverlay(racksOpts);
 	}
 	
-	// TODO: menu to toggle routes and racks overlays
-	
-	/* Creates the menu items */
+	// menu to toggle routes and racks overlays
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        racksMenu = menu.add(0, MENU_SHOW_HIDE_RACKS, 0, "Hide Bike Parking").setIcon(android.R.drawable.ic_menu_view);
-        routesMenu = menu.add(0, MENU_SHOW_HIDE_ROUTES, 0, "Hide Bike Routes").setIcon(android.R.drawable.ic_menu_view);
+        racksMenu = menu.add(0, MENU_SHOW_HIDE_RACKS, 0, "Hide Racks").setIcon(android.R.drawable.ic_menu_view);
+        routesMenu = menu.add(0, MENU_SHOW_HIDE_ROUTES, 0, "Hide Routes").setIcon(android.R.drawable.ic_menu_view);
         menu.add(0, MENU_ABOUT, 0, "About this Map").setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
 
-    /* Handles item selections */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case MENU_SHOW_HIDE_RACKS:
             if (racksOverlay.isVisible()) {
             	racksOverlay.setVisible(false);
-            	racksMenu.setTitle("Show Bike Parking");
+            	racksMenu.setTitle("Show Racks");
             } else {
             	racksOverlay.setVisible(true);
-            	racksMenu.setTitle("Hide Bike Parking");
+            	racksMenu.setTitle("Hide Racks");
             }
             return true;
         case MENU_SHOW_HIDE_ROUTES:
         	if (routesOverlay.isVisible()) {
         		routesOverlay.setVisible(false);
-        		routesMenu.setTitle("Show Bike Routes");
+        		routesMenu.setTitle("Show Routes");
         	} else {
         		routesOverlay.setVisible(true);
-        		routesMenu.setTitle("Hide Bike Routes");
+        		routesMenu.setTitle("Hide Routes");
         	}
             return true;
         case MENU_ABOUT:
-        	// TODO:
-        	
-        	//t3.setText("you clicked me");
-        	//PopupWindow pop = new PopupWindow(t3, 100, 200);
-        	//View myView = this.findViewById(R.layout.nearbymapview);
-        	//pop.showAtLocation(myView, Gravity.CENTER, 0, 0);
+        	LayoutInflater li = (LayoutInflater)getApplicationContext().getSystemService
+        		      (Context.LAYOUT_INFLATER_SERVICE);
+        	View popup = li.inflate(R.layout.popup, null);
+		    TextView tv = (TextView)popup.findViewById(R.id.title);
+		    tv.setText("About this Map");
+		    tv.setTextColor(Color.BLUE);
+		    tv = (TextView)popup.findViewById(R.id.snippet);
+		    tv.setText("\nThis map uses Google Maps to show streets.\n\n" +
+		    		"The information for the bicycle routes and parking racks " +
+		    		"comes from the City of Philadelphia, and is presented using MapBox.\n");
+		    tv.setTextColor(Color.BLACK);
+		    popup.setBackgroundColor(Color.LTGRAY);
+		    
+		    final PopupWindow pop = new PopupWindow(popup);
+		    pop.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+		    pop.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+		    pop.setFocusable(true);
+		    pop.setOutsideTouchable(true);
+		    pop.setBackgroundDrawable(new BitmapDrawable());
+		    
+		    class OnTouchAboutWindowListener implements OnTouchListener {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					pop.dismiss();
+					return true;
+				}
+		    }
+		    
+		    OnTouchAboutWindowListener listener = new OnTouchAboutWindowListener();
+		    pop.setTouchInterceptor(listener);
+		    
+        	pop.showAtLocation(this.findViewById(R.id.map), Gravity.CENTER, 40, 20);
         	
         	return true;
         }
         return false;
     }
-	
+    
 	private class BikeRackInfoWindow implements InfoWindowAdapter {
 		LayoutInflater inflater=null;
 		
