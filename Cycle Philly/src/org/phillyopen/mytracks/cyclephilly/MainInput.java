@@ -41,21 +41,31 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View.OnTouchListener;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -73,6 +83,7 @@ public class MainInput extends FragmentActivity {
     private final static int MENU_USER_INFO = 0;
     private final static int MENU_HELP = 1;
     private final static int MENU_MAP = 2;
+    private final static int MENU_LEGAL_INFO = 3;
 
     private final static int CONTEXT_RETRY = 0;
     private final static int CONTEXT_DELETE = 1;
@@ -86,9 +97,7 @@ public class MainInput extends FragmentActivity {
             case CONNECTION_FAILURE_RESOLUTION_REQUEST :
                 switch (resultCode) {
                     case Activity.RESULT_OK :
-                    // try the request again
-                    // TODO:  anything?
-                    
+                    //TODO: ...try the request again?
                     break;
                 }
         	}
@@ -300,7 +309,8 @@ public class MainInput extends FragmentActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, MENU_HELP, 0, "Help and FAQ").setIcon(android.R.drawable.ic_menu_help);
         menu.add(0, MENU_USER_INFO, 0, "Edit User Info").setIcon(android.R.drawable.ic_menu_edit);
-        menu.add(0, MENU_MAP, 0, "Map Nearby Racks and Routes").setIcon(android.R.drawable.ic_menu_compass);
+        menu.add(0, MENU_MAP, 0, "Cycling Map").setIcon(android.R.drawable.ic_menu_compass);
+        menu.add(0, MENU_LEGAL_INFO, 0, "Legal Information").setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
 
@@ -319,6 +329,9 @@ public class MainInput extends FragmentActivity {
         case MENU_MAP:
         	startActivity(new Intent(this, ShowMapNearby.class));
         	return true;
+        case MENU_LEGAL_INFO:
+        	startActivity(new Intent(this, LicenseActivity.class));
+      		return true;
         }
         return false;
     }
@@ -329,5 +342,5 @@ class FakeAdapter extends SimpleAdapter {
 			int resource, String[] from, int[] to) {
 		super(context, data, resource, from, to);
 	}
-
 }
+

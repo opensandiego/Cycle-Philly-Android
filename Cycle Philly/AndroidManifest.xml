@@ -72,6 +72,11 @@
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance" >
         </activity>
+        <activity
+            android:name="org.phillyopen.mytracks.cyclephilly.LicenseActivity"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance" >
+        </activity>
 
         <service
             android:name="org.phillyopen.mytracks.cyclephilly.RecordingService"
