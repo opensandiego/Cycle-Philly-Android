@@ -162,8 +162,9 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         user.put(USER_GENDER, settings.getInt("" + UserInfoActivity.PREF_GENDER, 0));
         
         // TODO: setting cycling frequency properly?
-        user.put(USER_CYCLING_FREQUENCY, settings.getInt("" + UserInfoActivity.PREF_CYCLEFREQ, 0));
-        //Integer.parseInt(settings.getString(""+UserInfoActivity.PREF_CYCLEFREQ, "0"))
+        int freq = settings.getInt("" + UserInfoActivity.PREF_CYCLEFREQ, 0);
+        if (freq > 0) freq /= 100; 
+        user.put(USER_CYCLING_FREQUENCY, freq);
         
         user.put(USER_ETHNICITY, settings.getInt("" + UserInfoActivity.PREF_ETHNICITY, 0));
         user.put(USER_INCOME, settings.getInt("" + UserInfoActivity.PREF_INCOME, 0));
