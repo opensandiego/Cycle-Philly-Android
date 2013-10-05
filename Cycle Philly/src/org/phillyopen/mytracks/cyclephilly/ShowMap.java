@@ -109,7 +109,6 @@ public class ShowMap extends FragmentActivity {
 
 			// check if got map
 			if (mMap == null) {
-				// TODO: anything?
 				Log.d("Couldn't get map fragment!", "No map fragment");
 				return;
 			}
