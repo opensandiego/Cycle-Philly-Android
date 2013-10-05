@@ -112,6 +112,9 @@ public class ShowMap extends FragmentActivity {
 				Log.d("Couldn't get map fragment!", "No map fragment");
 				return;
 			}
+			
+			// customize info window
+			mMap.setInfoWindowAdapter(new BikeRackInfoWindow(getLayoutInflater()));
 
             // Show trip details
             TextView t1 = (TextView) findViewById(R.id.TextViewT1);
