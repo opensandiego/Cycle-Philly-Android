@@ -313,13 +313,10 @@ public class MainInput extends FragmentActivity {
             return true;
         case MENU_HELP:
         	Intent myIntent = new Intent(Intent.ACTION_VIEW,
-        			//TODO: change website link
-        			Uri.parse("http://cycleatlanta.org/instructions/androidhelp.html"));
+        			Uri.parse("http://mytracks.phillyopen.org/instructions-v2/androidhelp.html"));
    			startActivity(myIntent);
             return true;
         case MENU_MAP:
-        	// TODO: something
-        	Log.d("menu click", "you clicked me!");
         	startActivity(new Intent(this, ShowMapNearby.class));
         	return true;
         }
