@@ -4,6 +4,7 @@ Philadelphia, PA. USA
 
  Contact: Corey Acri <acri.corey@gmail.com>
              Lloyd Emelle <lemelle@codeforamerica.org>
+             Kathryn Killebrew <banderkat@gmail.com>
 
 Updated/Modified for Philadelphia's app deployment. Based on the
 CycleTracks codebase for SFCTA.
