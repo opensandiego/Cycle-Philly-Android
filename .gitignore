@@ -137,3 +137,6 @@ proguard/
 ## Eclipse metadata
 .metadata/
 
+## Eclipse generated folder
+RemoteSystemsTempFiles/
+
