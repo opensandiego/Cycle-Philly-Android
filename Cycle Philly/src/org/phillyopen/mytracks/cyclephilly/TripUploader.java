@@ -208,6 +208,26 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             final String emulatorId = "android-RunningAsTestingDeleteMe";
             return emulatorId;
         }
+        
+        ////////////////////////////////
+        // TODO: remove this temporary workaround for forcing
+        // reported device ID length of 32, once server check removed.
+        
+        // androidBase is 16 chars, so pad androidId to 16 if shorter
+        int magicLen = 16;
+        if (androidId.length() != magicLen) {
+        	int idLen = androidId.length();
+        	if (idLen < magicLen) {
+        		// pad ID with zeroes to the left
+        		androidId = String.format(Locale.US, 
+        				"%0" + magicLen + "d", androidId);
+        	} else {
+        		// shorten androidBase if androidId is longer than 16
+        		androidBase = androidBase.substring(0, magicLen - idLen);
+        	}
+        }
+        /////////////////////////////////
+        
         String deviceId = androidBase.concat(androidId);
         return deviceId;
     }
@@ -280,7 +300,6 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         //Log.v("PostData", nameValuePairs.toString());
 
         HttpClient client = new DefaultHttpClient();
-        //TODO: Server URL
         final String postUrl = "http://mytracks.phillyopen.org/post/";
         HttpPost postRequest = new HttpPost(postUrl);
 
