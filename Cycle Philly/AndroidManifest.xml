@@ -92,6 +92,9 @@
         <meta-data
     		android:name="com.google.android.maps.v2.API_KEY"
     		android:value="AIzaSyDkVAWDZqJ5tF6HYWJRSSE7E_ATW24EXSo"/>
+        
+        <activity android:name="net.hockeyapp.android.UpdateActivity" />
+        
     </application>
 
 </manifest>

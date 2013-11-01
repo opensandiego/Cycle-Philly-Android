@@ -30,6 +30,9 @@
 
 package org.phillyopen.mytracks.cyclephilly;
 
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -81,6 +84,17 @@ public class MainInput extends FragmentActivity {
 
     DbAdapter mDb;
     
+	// HockeyApp
+	private void checkForCrashes() {
+		CrashManager.register(this, "1f70591a2ea8040a820880f803e28a49");
+	}
+
+	// HockeyApp
+	private void checkForUpdates() {
+		// Remove this for store builds!
+		UpdateManager.register(this, "1f70591a2ea8040a820880f803e28a49");
+	}
+ 	 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -92,28 +106,29 @@ public class MainInput extends FragmentActivity {
                 }
         	}
         }
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
-    	
-    	// Check that Google Play services is available
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (ConnectionResult.SUCCESS == resultCode) {
-            Log.d("Location Updates", "Google Play services is available.");
-            return;
-        // Google Play services was not available for some reason
-        } else {
-            // Get the error dialog from Google Play services
-            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
-            // If Google Play services can provide an error dialog
-            if (errorDialog != null) {
-                ErrorDialogFragment errorFragment = new ErrorDialogFragment();
-                errorFragment.setDialog(errorDialog);
-                errorFragment.show(getSupportFragmentManager(), "Location Updates");
-            }
-        }
-    }
+    	 
+	@Override
+	public void onResume() {
+		super.onResume();
+		checkForCrashes(); // HockeyApp
+		
+		// Check that Google Play services is available
+	    int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+	    if (ConnectionResult.SUCCESS == resultCode) {
+	        Log.d("Location Updates", "Google Play services is available.");
+	        return;
+	    // Google Play services was not available for some reason
+	    } else {
+	        // Get the error dialog from Google Play services
+	        Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+	        // If Google Play services can provide an error dialog
+	        if (errorDialog != null) {
+	            ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+	            errorFragment.setDialog(errorDialog);
+	            errorFragment.show(getSupportFragmentManager(), "Location Updates");
+	        }
+	    }
+	}
     
 	/** Called when the activity is first created. */
 	@Override
@@ -170,6 +185,8 @@ public class MainInput extends FragmentActivity {
 			    }
 			}
 		});
+		
+		checkForUpdates(); // for HockeyApp
 	}
 
     private void buildAlertMessageNoGps() {
