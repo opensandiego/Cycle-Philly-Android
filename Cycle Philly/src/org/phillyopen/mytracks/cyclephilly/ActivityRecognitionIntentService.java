@@ -5,6 +5,7 @@ import com.google.android.gms.location.DetectedActivity;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 /**
@@ -12,10 +13,16 @@ import android.util.Log;
  * updates in the background, even if the main Activity is not visible.
  */
 public class ActivityRecognitionIntentService extends IntentService {
+	private Intent broadcastIntent;
+	private LocalBroadcastManager broadcastManager;
 	
 	public ActivityRecognitionIntentService() {
 		// Set the label for the service's background thread
         super("ActivityRecognitionIntentService");
+        broadcastIntent = new Intent();
+        broadcastIntent.addCategory(ACTIVITY_SERVICE);
+        broadcastIntent.setAction(NOTIFICATION_SERVICE);
+        broadcastManager = LocalBroadcastManager.getInstance(this);
 	}
 
 	/**
@@ -23,6 +30,7 @@ public class ActivityRecognitionIntentService extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent intent) {
+    	
     	// If the incoming intent contains an update
         if (ActivityRecognitionResult.hasResult(intent)) {
             // Get the update
@@ -51,7 +59,7 @@ public class ActivityRecognitionIntentService extends IntentService {
             
             // show result in a message
             Log.d("detected activity", activityName + " with confidence " + Integer.toString(confidence));
-            
+            broadcastManager.sendBroadcast(broadcastIntent);
         } else {
             /*
              * This implementation ignores intents that don't contain

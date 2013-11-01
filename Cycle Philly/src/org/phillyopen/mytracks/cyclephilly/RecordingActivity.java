@@ -32,15 +32,19 @@ package org.phillyopen.mytracks.cyclephilly;
 
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender.SendIntentException;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -66,6 +70,8 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 	private PendingIntent mActivityRecognitionPendingIntent;
     // Store the current activity recognition client
     private ActivityRecognitionClient mActivityRecognitionClient;
+    private LocalBroadcastManager mBroadcastManager;
+    private IntentFilter mIntentFilter;
     private Context mContext;
     // Flag that indicates if a request is underway.
     private boolean mInProgress;
@@ -120,6 +126,11 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
         mContext = getApplicationContext();
         mInProgress = false;
         mActivityRecognitionClient = new ActivityRecognitionClient(mContext, this, this);
+        //////////
+        mBroadcastManager = LocalBroadcastManager.getInstance(mContext);
+        mIntentFilter = new IntentFilter(ACTIVITY_SERVICE);
+        mIntentFilter.addCategory(NOTIFICATION_SERVICE);
+        //////////
         Intent intent = new Intent(mContext, ActivityRecognitionIntentService.class);
         mActivityRecognitionPendingIntent =
                 PendingIntent.getService(mContext, 0, intent,
@@ -167,6 +178,16 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 			}
 		};
 		bindService(rService, sc, Context.BIND_AUTO_CREATE);
+		
+		BroadcastReceiver updateListReceiver = new BroadcastReceiver() {
+		   @Override
+		   public void onReceive(Context context, Intent intent) {
+		     // When an Intent is received from the update listener IntentService,
+		     
+			   // TODO:
+			 Log.d("broadcast received", "Detected " + intent.getDataString());
+		   }
+		};
 
 		// Pause button
 		pauseButton.setEnabled(false);
