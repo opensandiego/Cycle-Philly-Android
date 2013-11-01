@@ -30,6 +30,7 @@
 
 package org.phillyopen.mytracks.cyclephilly;
 
+import com.testflightapp.lib.TestFlight;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -209,6 +210,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             return emulatorId;
         }
         
+        /*
         ////////////////////////////////
         // TODO: remove this temporary workaround for forcing
         // reported device ID length of 32, once server check removed.
@@ -227,6 +229,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         	}
         }
         /////////////////////////////////
+        */
         
         String deviceId = androidBase.concat(androidId);
         return deviceId;
@@ -290,7 +293,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             nameValuePairs = getPostData(currentTripId);
             
             ///////////////////////////////////////////////////
-            Log.d("sending data", nameValuePairs.toString());
+            // Log.d("sending data", nameValuePairs.toString());
             ////////////////////////////////////////////////////
             
         } catch (JSONException e) {
@@ -311,7 +314,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             JSONObject responseData = new JSONObject(responseString);
             
             ////////////////////////////
-            Log.d("server response", responseData.toString());
+            //Log.d("server response", responseData.toString());
             ///////////////////////////
             
             if (responseData.getString("status").equals("success")) {
@@ -319,15 +322,19 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
                 mDb.updateTripStatus(currentTripId, TripData.STATUS_SENT);
                 mDb.close();
                 result = true;
+                TestFlight.passCheckpoint("successfully uploaded trip");
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();
+            TestFlight.passCheckpoint("IllegalStateException while uploading trip");
             return false;
         } catch (IOException e) {
             e.printStackTrace();
+            TestFlight.passCheckpoint("IOException while uploading trip");
             return false;
         } catch (JSONException e) {
             e.printStackTrace();
+            TestFlight.passCheckpoint("JSONException while uploading trip");
             return false;
         }
         return result;
@@ -350,6 +357,9 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         Cursor cur = mDb.fetchUnsentTrips();
         if (cur != null && cur.getCount()>0) {
             //pd.setMessage("Sent. You have previously unsent trips; submitting those now.");
+        	
+        	TestFlight.passCheckpoint("uploading previously unsent trips");
+        	
             while (!cur.isAfterLast()) {
                 unsentTrips.add(Long.valueOf(cur.getLong(0)));
                 cur.moveToNext();
