@@ -209,6 +209,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             return emulatorId;
         }
         
+        /*
         ////////////////////////////////
         // TODO: remove this temporary workaround for forcing
         // reported device ID length of 32, once server check removed.
@@ -227,6 +228,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         	}
         }
         /////////////////////////////////
+        */
         
         String deviceId = androidBase.concat(androidId);
         return deviceId;
