@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="recording_title">Cycle Atlanta</string>
-    
+    <string name="recording_title">Cycle Philly</string>
 	<string name="app_name">Cycle Philly</string>
 	<string name="icon">Bicycle Parking</string>
 	<string name="previous_trips">Saved Trips:</string>
