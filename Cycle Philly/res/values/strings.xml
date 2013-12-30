@@ -7,12 +7,10 @@
 	<string name="startNewTrip">Start Trip!</string>
 	<string name="pauseButtonLabel">Pause</string>
 	<string name="finishedButtonLabel">Finish</string>
-	
 	<string name="enterTripInfo">And add any comments about your trip here</string>
 	<string name="promptPurpose">Select the main purpose of this trip</string>
 	<string name="uploadProgressTitle">Sending…</string>
 	<string name="uploadProgressMessage">Sending your trip.\n\nThanks for using Cycle Philly!</string>
-
 	<string-array name="ageArray">
 	    <item></item>
 	    <item>Less than 18</item>
