@@ -31,6 +31,7 @@
 package org.phillyopen.mytracks.cyclephilly;
 
 import com.testflightapp.lib.TestFlight;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -41,6 +42,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -210,27 +214,6 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             return emulatorId;
         }
         
-        /*
-        ////////////////////////////////
-        // TODO: remove this temporary workaround for forcing
-        // reported device ID length of 32, once server check removed.
-        
-        // androidBase is 16 chars, so pad androidId to 16 if shorter
-        int magicLen = 16;
-        if (androidId.length() != magicLen) {
-        	int idLen = androidId.length();
-        	if (idLen < magicLen) {
-        		// pad ID with zeroes to the left
-        		androidId = String.format(Locale.US, 
-        				"%0" + magicLen + "d", androidId);
-        	} else {
-        		// shorten androidBase if androidId is longer than 16
-        		androidBase = androidBase.substring(0, magicLen - idLen);
-        	}
-        }
-        /////////////////////////////////
-        */
-        
         String deviceId = androidBase.concat(androidId);
         return deviceId;
     }
@@ -294,15 +277,29 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             
             ///////////////////////////////////////////////////
             // Log.d("sending data", nameValuePairs.toString());
+            TestFlight.log("sending trip: " + nameValuePairs.toString());
             ////////////////////////////////////////////////////
             
         } catch (JSONException e) {
             e.printStackTrace();
+            TestFlight.passCheckpoint("JSONException getting trip");
+            TestFlight.log(e.getMessage());
             return result;
         }
         //Log.v("PostData", nameValuePairs.toString());
 
-        HttpClient client = new DefaultHttpClient();
+        // set connection timeouts for HTTPClient
+        HttpParams httpParameters = new BasicHttpParams();
+        // Set the timeout in milliseconds until a connection is established.
+        // The default value is zero, that means the timeout is not used. 
+        int timeoutConnection = 5000;
+        HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+        // Set the default socket timeout (SO_TIMEOUT) 
+        // in milliseconds which is the timeout for waiting for data.
+        int timeoutSocket = 30000;
+        HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+        HttpClient client = new DefaultHttpClient(httpParameters);
+        
         final String postUrl = "http://mytracks.phillyopen.org/post/";
         HttpPost postRequest = new HttpPost(postUrl);
 
@@ -327,14 +324,17 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         } catch (IllegalStateException e) {
             e.printStackTrace();
             TestFlight.passCheckpoint("IllegalStateException while uploading trip");
+            TestFlight.log(e.getMessage());
             return false;
         } catch (IOException e) {
             e.printStackTrace();
             TestFlight.passCheckpoint("IOException while uploading trip");
+            TestFlight.log(e.getMessage());
             return false;
         } catch (JSONException e) {
             e.printStackTrace();
             TestFlight.passCheckpoint("JSONException while uploading trip");
+            TestFlight.log(e.getMessage());
             return false;
         }
         return result;
@@ -345,8 +345,8 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         // First, send the trip user asked for:
         Boolean result = uploadOneTrip(tripid[0]);
         
-        // TODO: not always working. Server checks for device ID length of 32
-        Log.d("uploading trip", tripid[0].toString());
+        // TODO: not always working?
+        //Log.d("uploading trip", tripid[0].toString());
         //////////////////////////////////////////////
 
         // Then, automatically try and send previously-completed trips
@@ -360,6 +360,11 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         	
         	TestFlight.passCheckpoint("uploading previously unsent trips");
         	
+        	////////////
+        	Log.d("previously unsent count", cur.getCount() + " previously unsent trips");
+        	TestFlight.log(cur.getCount() + " previously unsent trips");
+        	////////////
+        	
             while (!cur.isAfterLast()) {
                 unsentTrips.add(Long.valueOf(cur.getLong(0)));
                 cur.moveToNext();
@@ -370,6 +375,11 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
 
         for (Long trip: unsentTrips) {
             result &= uploadOneTrip(trip);
+            ///////////////
+            Log.d("uploading unsent trip", trip.toString());
+            TestFlight.log("sending previously unsent trip: " + trip.toString());
+            ///////////////
+            
         }
         return result;
     }
