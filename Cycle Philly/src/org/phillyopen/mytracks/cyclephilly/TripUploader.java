@@ -302,7 +302,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         
         final String postUrl = "http://mytracks.phillyopen.org/post/";
         HttpPost postRequest = new HttpPost(postUrl);
-
+  
         try {
             postRequest.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(postRequest);
