@@ -37,9 +37,14 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.phillyopen.mytracks.cyclephilly.R;
+
+import com.testflightapp.lib.TestFlight;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -142,15 +147,9 @@ public class SaveTrip extends Activity {
 		// Discard btn
 		final Button btnDiscard = (Button) findViewById(R.id.ButtonDiscard);
 		btnDiscard.setOnClickListener(new View.OnClickListener() {
+			// use confirmation AlertDialog
 			public void onClick(View v) {
-				Toast.makeText(getBaseContext(), "Trip discarded.",	Toast.LENGTH_SHORT).show();
-
-				cancelRecording();
-
-				Intent i = new Intent(SaveTrip.this, MainInput.class);
-				i.putExtra("keepme", true);
-				startActivity(i);
-				SaveTrip.this.finish();
+				buildAlertConfirmDelete();
 			}
 		});
 
@@ -247,6 +246,30 @@ public class SaveTrip extends Activity {
 		// This should block until the onServiceConnected (above) completes.
 		bindService(rService, sc, Context.BIND_AUTO_CREATE);
 	}
+	
+	private void buildAlertConfirmDelete() {
+    	TestFlight.passCheckpoint("Ask to confirm trip deletion");
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Delete trip from your device now?")
+               .setCancelable(false)
+               .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                   public void onClick(final DialogInterface dialog, final int id) {
+                	   Toast.makeText(getBaseContext(), "Trip discarded.",	Toast.LENGTH_SHORT).show();
+	       				cancelRecording();
+	       				final Intent i = new Intent(SaveTrip.this, MainInput.class);
+	       				i.putExtra("keepme", true);
+	       				startActivity(i);
+	       				SaveTrip.this.finish();
+                   }
+               })
+               .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                   public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                   }
+               });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
 
 	void finishRecording() {
 		Intent rService = new Intent(this, RecordingService.class);
