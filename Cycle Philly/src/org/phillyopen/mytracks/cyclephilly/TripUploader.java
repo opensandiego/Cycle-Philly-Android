@@ -30,8 +30,6 @@
 
 package org.phillyopen.mytracks.cyclephilly;
 
-import com.testflightapp.lib.TestFlight;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -274,16 +272,8 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         List<NameValuePair> nameValuePairs;
         try {
             nameValuePairs = getPostData(currentTripId);
-            
-            ///////////////////////////////////////////////////
-            // Log.d("sending data", nameValuePairs.toString());
-            TestFlight.log("sending trip: " + nameValuePairs.toString());
-            ////////////////////////////////////////////////////
-            
         } catch (JSONException e) {
             e.printStackTrace();
-            TestFlight.passCheckpoint("JSONException getting trip");
-            TestFlight.log(e.getMessage());
             return result;
         }
         //Log.v("PostData", nameValuePairs.toString());
@@ -319,22 +309,15 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
                 mDb.updateTripStatus(currentTripId, TripData.STATUS_SENT);
                 mDb.close();
                 result = true;
-                TestFlight.passCheckpoint("successfully uploaded trip");
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            TestFlight.passCheckpoint("IllegalStateException while uploading trip");
-            TestFlight.log(e.getMessage());
             return false;
         } catch (IOException e) {
             e.printStackTrace();
-            TestFlight.passCheckpoint("IOException while uploading trip");
-            TestFlight.log(e.getMessage());
             return false;
         } catch (JSONException e) {
             e.printStackTrace();
-            TestFlight.passCheckpoint("JSONException while uploading trip");
-            TestFlight.log(e.getMessage());
             return false;
         }
         return result;
@@ -358,11 +341,8 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         if (cur != null && cur.getCount()>0) {
             //pd.setMessage("Sent. You have previously unsent trips; submitting those now.");
         	
-        	TestFlight.passCheckpoint("uploading previously unsent trips");
-        	
         	////////////
-        	Log.d("previously unsent count", cur.getCount() + " previously unsent trips");
-        	TestFlight.log(cur.getCount() + " previously unsent trips");
+        	//Log.d("previously unsent count", cur.getCount() + " previously unsent trips");
         	////////////
         	
             while (!cur.isAfterLast()) {
@@ -376,8 +356,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         for (Long trip: unsentTrips) {
             result &= uploadOneTrip(trip);
             ///////////////
-            Log.d("uploading unsent trip", trip.toString());
-            TestFlight.log("sending previously unsent trip: " + trip.toString());
+            //Log.d("uploading unsent trip", trip.toString());
             ///////////////
             
         }

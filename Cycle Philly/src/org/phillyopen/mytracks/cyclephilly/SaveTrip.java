@@ -38,8 +38,6 @@ import java.util.TimeZone;
 
 import org.phillyopen.mytracks.cyclephilly.R;
 
-import com.testflightapp.lib.TestFlight;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -248,7 +246,6 @@ public class SaveTrip extends Activity {
 	}
 	
 	private void buildAlertConfirmDelete() {
-    	TestFlight.passCheckpoint("Ask to confirm trip deletion");
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Delete trip from your device now?")
                .setCancelable(false)

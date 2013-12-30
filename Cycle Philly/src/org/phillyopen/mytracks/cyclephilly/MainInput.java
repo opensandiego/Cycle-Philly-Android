@@ -30,8 +30,6 @@
 
 package org.phillyopen.mytracks.cyclephilly;
 
-import com.testflightapp.lib.TestFlight;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -127,9 +125,6 @@ public class MainInput extends FragmentActivity {
 		// (This handles user who hit BACK button while recording)
 		setContentView(R.layout.main);
 		
-		//Initialize TestFlight with your app token.
-        TestFlight.takeOff(this.getApplication(), "b2ee2daf-243a-4c33-88f2-51a93c2a902e");
-
 		Intent rService = new Intent(this, RecordingService.class);
 		ServiceConnection sc = new ServiceConnection() {
 			public void onServiceDisconnected(ComponentName name) {}
@@ -178,7 +173,6 @@ public class MainInput extends FragmentActivity {
 	}
 
     private void buildAlertMessageNoGps() {
-    	TestFlight.passCheckpoint("Alert GPS disabled");
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Your phone's GPS is disabled. Cycle Philly needs GPS to determine your location.\n\nGo to System Settings now to enable GPS?")
                .setCancelable(false)
@@ -198,7 +192,6 @@ public class MainInput extends FragmentActivity {
     }
 
     private void showWelcomeDialog() {
-    	TestFlight.passCheckpoint("show welcome dialog");
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Please enter your personal details so we can learn a bit about you.\n\nThen, try to use Cycle Philly every time you ride. Your trip routes will be sent to City of Philadelphia so we can plan for better biking!\n\nThanks,\nThe Cycle Philly team")
                .setCancelable(false).setTitle("Welcome to Cycle Philly!")
@@ -220,7 +213,6 @@ public class MainInput extends FragmentActivity {
 		// Clean up any bad trips & coords from crashes
 		int cleanedTrips = mDb.cleanTables();
 		if (cleanedTrips > 0) {
-			TestFlight.passCheckpoint("cleaned bad trip(s) from crashes");
 		    Toast.makeText(getBaseContext(),""+cleanedTrips+" bad trip(s) removed.", Toast.LENGTH_SHORT).show();
 		}
 
@@ -255,7 +247,6 @@ public class MainInput extends FragmentActivity {
 
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 		    public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
-		    	TestFlight.passCheckpoint("view trip");
 		        Intent i = new Intent(MainInput.this, ShowMap.class);
 		        i.putExtra("showtrip", id);
 		        startActivity(i);
@@ -278,11 +269,9 @@ public class MainInput extends FragmentActivity {
 	    switch (item.getItemId()) {
 	    case CONTEXT_RETRY:
 	        retryTripUpload(info.id);
-	        TestFlight.passCheckpoint("retry trip upload");
 	        return true;
 	    case CONTEXT_DELETE:
 	        deleteTrip(info.id);
-	        TestFlight.passCheckpoint("delete trip");
 	        return true;
 	    default:
 	        return super.onContextItemSelected(item);
@@ -320,17 +309,14 @@ public class MainInput extends FragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case MENU_USER_INFO:
-        	TestFlight.passCheckpoint("view user info menu");
             startActivity(new Intent(this, UserInfoActivity.class));
             return true;
         case MENU_HELP:
-        	TestFlight.passCheckpoint("view help website");
         	Intent myIntent = new Intent(Intent.ACTION_VIEW,
         			Uri.parse("http://mytracks.phillyopen.org/instructions-v2/androidhelp.html"));
    			startActivity(myIntent);
             return true;
         case MENU_MAP:
-        	TestFlight.passCheckpoint("view map of racks/routes");
         	startActivity(new Intent(this, ShowMapNearby.class));
         	return true;
         case MENU_LEGAL_INFO:
