@@ -34,6 +34,11 @@ http://www.sfcta.org/cycletracks
 CycleTracks is released under the GNU General Public License, version 3.
 See 'COPYING' for a detailed description of the GNU GPL.
 
+Installation notes
+-----------
+
+Android Studio is required to build this project. You will also need to install the "Google Repository" add-on using the Android SDK manager.
+
 -----------
 
 This program is free software: you can redistribute it and/or modify
