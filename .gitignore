@@ -140,3 +140,5 @@ proguard/
 ## Eclipse generated folder
 RemoteSystemsTempFiles/
 
+# gradle
+.gradle/
