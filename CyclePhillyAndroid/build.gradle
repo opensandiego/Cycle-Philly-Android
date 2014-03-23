@@ -31,4 +31,6 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:+'
     compile 'com.google.android.gms:play-services:+'
+    compile files('libs/firebase-client-jvm.jar')
+    compile files('libs/firebase-simple-login.jar')
 }
