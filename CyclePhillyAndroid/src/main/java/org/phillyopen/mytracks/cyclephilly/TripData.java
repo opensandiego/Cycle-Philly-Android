@@ -62,8 +62,9 @@ public class TripData {
     public static int STATUS_INCOMPLETE = 0;
     public static int STATUS_COMPLETE = 1;
     public static int STATUS_SENT = 2;
+    public String Uid;
 
-	public static TripData createTrip(Context c) {
+    public static TripData createTrip(Context c) {
 		TripData t = new TripData(c.getApplicationContext(), 0);
 		t.createTripInDatabase(c);
         t.initializeData();

@@ -42,6 +42,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -51,10 +52,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.firebase.client.Firebase;
+import com.firebase.simplelogin.SimpleLogin;
+import com.firebase.simplelogin.SimpleLoginAuthenticatedHandler;
+import com.firebase.simplelogin.User;
+import com.firebase.simplelogin.enums.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -140,11 +150,29 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 		Intent rService = new Intent(this, RecordingService.class);
 		startService(rService);
 		ServiceConnection sc = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) { stopUpdates(); }
+            public String fbId;
+
+            public void onServiceDisconnected(ComponentName name) { stopUpdates(); }
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				IRecordService rs = (IRecordService) service;
+                // Write trip to firebase
+                long tripId = rs.getCurrentTrip();
 
-				switch (rs.getState()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+
+                Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/"+
+                        sdf.format(new Date(System.currentTimeMillis())));
+                SimpleLogin authClient = new SimpleLogin(tripsRef);
+                authClient.checkAuthStatus(new SimpleLoginAuthenticatedHandler() {
+                    @Override
+                    public void authenticated(com.firebase.simplelogin.enums.Error error, User user) {
+
+                    }
+                });
+                Firebase newPushRef = tripsRef.push();
+                newPushRef.setValue(System.currentTimeMillis());
+                this.fbId = newPushRef.getName();
+                switch (rs.getState()) {
 					case RecordingService.STATE_IDLE:
 						trip = TripData.createTrip(RecordingActivity.this);
 						rs.startRecording(trip);
@@ -227,6 +255,43 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
                     if (trip.totalPauseTime > 0) {
                         trip.endTime = System.currentTimeMillis() - trip.totalPauseTime;
                     }
+                    // Write trip to firebase
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+
+                    Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips-completed/"+
+                            sdf.format(new Date(System.currentTimeMillis())));
+                    SimpleLogin authClient = new SimpleLogin(tripsRef);
+                    authClient.checkAuthStatus(new SimpleLoginAuthenticatedHandler() {
+                        public String userId;
+
+                        @Override
+                        public void authenticated(com.firebase.simplelogin.enums.Error error, User user) {
+                            if (error != null) {
+                                // Oh no! There was an error performing the check
+                                //Toast.makeText(getBaseContext(),"Firebase Error!", Toast.LENGTH_SHORT).show();
+                            } else if (user == null) {
+                                // No user is logged in
+                                //Toast.makeText(getBaseContext(),"Not Firebased!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                trip.Uid = user.getUid();
+                            }
+
+                        }
+                    });
+                    Map<String, Object> toSet = new HashMap<String, Object>();
+                    toSet.put("uid", trip.Uid);
+                    toSet.put("distance", trip.distance);
+                    toSet.put("totalPoints", trip.numpoints);
+                    
+                    toSet.put("startTime", trip.startTime);
+                    toSet.put("endTime", trip.endTime);
+                    toSet.put("endLat", trip.latestlat);
+                    toSet.put("endLng", trip.latestlgt);
+                    toSet.put("totalTime", trip.endTime - trip.startTime);
+                    Firebase newPushRef = tripsRef.push();
+                    newPushRef.setValue(toSet);
+                    //String pushedName = newPushRef.getName();
 					// Save trip so far (points and extent, but no purpose or notes)
 					fi = new Intent(RecordingActivity.this, SaveTrip.class);
 					trip.updateTrip("","","","");

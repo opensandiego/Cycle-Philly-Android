@@ -64,8 +64,15 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Map;
 
+import com.firebase.simplelogin.SimpleLoginAuthenticatedHandler;
+import com.firebase.simplelogin.User;
+import com.firebase.simplelogin.enums.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import com.firebase.client.Firebase;
+import com.firebase.simplelogin.SimpleLogin;
+import com.firebase.client.ValueEventListener;
 
 import org.phillyopen.mytracks.cyclephilly.R;
 
@@ -158,6 +165,24 @@ public class MainInput extends FragmentActivity {
 		// And set up the record button
 		final Button startButton = (Button) findViewById(R.id.ButtonStart);
 		final Intent i = new Intent(this, RecordingActivity.class);
+
+        Firebase ref = new Firebase("https://cyclephilly.firebaseio.com");
+        SimpleLogin authClient = new SimpleLogin(ref);
+        authClient.loginAnonymously(new SimpleLoginAuthenticatedHandler() {
+            @Override
+            public void authenticated(com.firebase.simplelogin.enums.Error error, User user) {
+                if (error != null) {
+                    // Oh no! There was an error performing the check
+                    //Toast.makeText(getBaseContext(),"Firebase Error!", Toast.LENGTH_SHORT).show();
+                } else if (user == null) {
+                    // No user is logged in
+                    //Toast.makeText(getBaseContext(),"Not Firebased!", Toast.LENGTH_SHORT).show();
+                } else {
+                    // There is a logged in user
+                    //Toast.makeText(getBaseContext(),"Firebased! :"+user.getUid(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 		startButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 			    // Before we go to record, check GPS status
@@ -165,7 +190,7 @@ public class MainInput extends FragmentActivity {
 			    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
 			        buildAlertMessageNoGps();
 			    } else {
-	                startActivity(i);
+                    startActivity(i);
 	                MainInput.this.finish();
 			    }
 			}
