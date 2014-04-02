@@ -61,24 +61,19 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
-import java.util.Map;
-
+import com.firebase.client.Firebase;
+import com.firebase.simplelogin.SimpleLogin;
 import com.firebase.simplelogin.SimpleLoginAuthenticatedHandler;
 import com.firebase.simplelogin.User;
-import com.firebase.simplelogin.enums.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-import com.firebase.client.Firebase;
-import com.firebase.simplelogin.SimpleLogin;
-import com.firebase.client.ValueEventListener;
-
-import org.phillyopen.mytracks.cyclephilly.R;
+import java.util.List;
+import java.util.Map;
 
 public class MainInput extends FragmentActivity {
     private final static int MENU_USER_INFO = 0;
-    private final static int MENU_HELP = 1;
+    private final static int MENU_CONTACT_US = 1;
     private final static int MENU_MAP = 2;
     private final static int MENU_LEGAL_INFO = 3;
 
@@ -322,7 +317,7 @@ public class MainInput extends FragmentActivity {
 	 /* Creates the menu items */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, MENU_HELP, 0, "Help and FAQ").setIcon(android.R.drawable.ic_menu_help);
+        menu.add(0, MENU_CONTACT_US, 0, "Contact Us").setIcon(android.R.drawable.ic_dialog_email);
         menu.add(0, MENU_USER_INFO, 0, "Edit User Info").setIcon(android.R.drawable.ic_menu_edit);
         menu.add(0, MENU_MAP, 0, "Cycling Map").setIcon(android.R.drawable.ic_menu_compass);
         menu.add(0, MENU_LEGAL_INFO, 0, "Legal Information").setIcon(android.R.drawable.ic_menu_info_details);
@@ -336,10 +331,12 @@ public class MainInput extends FragmentActivity {
         case MENU_USER_INFO:
             startActivity(new Intent(this, UserInfoActivity.class));
             return true;
-        case MENU_HELP:
-        	Intent myIntent = new Intent(Intent.ACTION_VIEW,
-        			Uri.parse("http://mytracks.phillyopen.org/instructions-v2/androidhelp.html"));
-   			startActivity(myIntent);
+        case MENU_CONTACT_US:
+        	Intent myIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                    "mailto","cyclephilly@gmail.com", null));
+            
+            myIntent.putExtra(Intent.EXTRA_SUBJECT, "Cycle Philly Android App");
+            startActivity(Intent.createChooser(myIntent, "Send email..."));
             return true;
         case MENU_MAP:
         	startActivity(new Intent(this, ShowMapNearby.class));
