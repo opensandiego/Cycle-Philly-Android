@@ -7,6 +7,7 @@
 	<string name="startNewTrip">Start Trip!</string>
 	<string name="pauseButtonLabel">Pause</string>
 	<string name="finishedButtonLabel">Finish</string>
+    <string name="didUsePublicTransit">Did you use public transit during this trip?</string>
 	<string name="enterTripInfo">And add any comments about your trip here</string>
 	<string name="promptPurpose">Select the main purpose of this trip</string>
 	<string name="uploadProgressTitle">Sending…</string>

@@ -70,7 +70,15 @@
 				android:paddingBottom="2sp" android:paddingTop="4sp"
 				android:id="@+id/TextPurpDescription" android:text="     "
 				android:lines="3" android:bufferType="spannable" android:textSize="14sp"></TextView>
-			<EditText android:bufferType="editable"
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:id="@+id/CheckBoxPublicTransit"
+                android:text="@string/didUsePublicTransit" />
+
+            <EditText android:bufferType="editable"
 				android:cursorVisible="true" android:layout_width="fill_parent"
 				android:selectAllOnFocus="true" android:layout_height="fill_parent"
 				android:id="@+id/NotesField" android:layout_marginTop="10sp"
