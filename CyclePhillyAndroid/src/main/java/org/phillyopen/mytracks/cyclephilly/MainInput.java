@@ -334,7 +334,7 @@ public class MainInput extends FragmentActivity {
         case MENU_CONTACT_US:
         	Intent myIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                     "mailto","cyclephilly@gmail.com", null));
-            
+
             myIntent.putExtra(Intent.EXTRA_SUBJECT, "Cycle Philly Android App");
             startActivity(Intent.createChooser(myIntent, "Send email..."));
             return true;

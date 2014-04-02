@@ -30,14 +30,6 @@
 
 package org.phillyopen.mytracks.cyclephilly;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.TimeZone;
-
-import org.phillyopen.mytracks.cyclephilly.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -53,11 +45,18 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.TimeZone;
 
 public class SaveTrip extends Activity {
 	long tripid;
@@ -180,6 +179,13 @@ public class SaveTrip extends Activity {
 
 				EditText notes = (EditText) findViewById(R.id.NotesField);
 
+                // Public transit check box
+                CheckBox checkBoxPublicTransit = (CheckBox) findViewById(R.id.CheckBoxPublicTransit);
+
+                // if user took public transit, add string "|took_transit" to comments field
+                String sendNotes = notes.getEditableText().toString();
+                if (checkBoxPublicTransit.isChecked()) sendNotes += "|took_transit";
+
 				String fancyStartTime = DateFormat.getInstance().format(trip.startTime);
 
 				// "3.5 miles in 26 minutes"
@@ -191,11 +197,8 @@ public class SaveTrip extends Activity {
 						minutes,
 						notes.getEditableText().toString());
 
-				// Save the trip details to the phone database. W00t!
-				trip.updateTrip(
-						purpose,
-						fancyStartTime, fancyEndInfo,
-						notes.getEditableText().toString());
+				// Save the trip details to the phone database.
+				trip.updateTrip(purpose, fancyStartTime, fancyEndInfo, sendNotes);
 				trip.updateTripStatus(TripData.STATUS_COMPLETE);
 				resetService();
 
