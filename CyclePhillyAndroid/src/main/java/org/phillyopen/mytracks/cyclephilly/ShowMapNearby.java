@@ -15,10 +15,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -29,8 +29,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
-
-import org.phillyopen.mytracks.cyclephilly.R;
 
 public class ShowMapNearby extends FragmentActivity {
 	
@@ -117,7 +115,7 @@ public class ShowMapNearby extends FragmentActivity {
 		//mMap.addTileOverlay(tileOpts);
 		
 		TileOverlayOptions racksOpts = new TileOverlayOptions();
-		racksOpts.tileProvider(new MapTileProvider("banderkat.philly_bikeracks"));
+		racksOpts.tileProvider(new MapTileProvider("banderkat.PhillyBikeRacks"));
 		TileOverlayOptions routesOpts = new TileOverlayOptions();
 		routesOpts.tileProvider(new MapTileProvider("banderkat.philly_bikeroutes"));
 		
