@@ -1,8 +1,11 @@
-/**	 Cycle Altanta, Copyright 2012 Georgia Institute of Technology
- *                                    Atlanta, GA. USA
+/**	 CyclePhilly, Copyright 2014 Code for Philly
+ *                                    Philadelphia, PA. USA
  *
  *   @author Christopher Le Dantec <ledantec@gatech.edu>
  *   @author Anhong Guo <guoanhong15@gmail.com>
+ *   @author Lloyd Emelle <lloyd@codeforamerica.org>
+ *
+ *   Updated/Modified for Philadelphia's app deployment. Realtime DB added.
  *
  *   Updated/Modified for Atlanta's app deployment. Based on the
  *   CycleTracks codebase for SFCTA.
@@ -39,15 +42,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender.SendIntentException;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +67,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.security.token.TokenGenerator;
+import com.firebase.security.token.TokenOptions;
 import com.firebase.simplelogin.SimpleLogin;
 import com.firebase.simplelogin.SimpleLoginAuthenticatedHandler;
 import com.firebase.simplelogin.User;
@@ -71,6 +80,8 @@ import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailed
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.ActivityRecognitionClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.phillyopen.mytracks.cyclephilly.R;
 
 public class RecordingActivity extends FragmentActivity implements ConnectionCallbacks, OnConnectionFailedListener {
@@ -158,17 +169,28 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
                 // Write trip to firebase
                 long tripId = rs.getCurrentTrip();
 
+                SharedPreferences settings = getSharedPreferences("PREFS", 0);
+                Object[] prefs = settings.getAll().values().toArray();
+//                Log.d("user email", "Detected " + prefs[5]);
+                JSONObject groups = new JSONObject();
+                try {
+                    groups.put("android", "true");
+                    groups.put("cycle", "true");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JSONObject arbitraryPayload = new JSONObject();
+                try {
+                    arbitraryPayload.put("groups", groups);
+                    arbitraryPayload.put("email", prefs[5]);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
 
                 Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/"+
                         sdf.format(new Date(System.currentTimeMillis())));
-                SimpleLogin authClient = new SimpleLogin(tripsRef);
-                authClient.checkAuthStatus(new SimpleLoginAuthenticatedHandler() {
-                    @Override
-                    public void authenticated(com.firebase.simplelogin.enums.Error error, User user) {
 
-                    }
-                });
                 Firebase newPushRef = tripsRef.push();
                 newPushRef.setValue(System.currentTimeMillis());
                 this.fbId = newPushRef.getName();
@@ -213,7 +235,7 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 		     // When an Intent is received from the update listener IntentService,
 		     
 			   // TODO:
-			 Log.d("broadcast received", "Detected " + intent.getDataString());
+//			 Log.d("broadcast received", "Detected " + intent.getDataString());
 		   }
 		};
 
@@ -283,7 +305,7 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
                     toSet.put("uid", trip.Uid);
                     toSet.put("distance", trip.distance);
                     toSet.put("totalPoints", trip.numpoints);
-                    
+
                     toSet.put("startTime", trip.startTime);
                     toSet.put("endTime", trip.endTime);
                     toSet.put("endLat", trip.latestlat);

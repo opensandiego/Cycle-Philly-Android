@@ -1,8 +1,11 @@
-/**	 Cycle Altanta, Copyright 2012 Georgia Institute of Technology
- *                                    Atlanta, GA. USA
+/**	 CyclePhilly, Copyright 2014 Code for Philly
+ *                                    Philadelphia, PA. USA
  *
  *   @author Christopher Le Dantec <ledantec@gatech.edu>
  *   @author Anhong Guo <guoanhong15@gmail.com>
+ *   @author Lloyd Emelle <lloyd@codeforamerica.org>
+ *
+ *   Updated/Modified for Philadelphia's app deployment. Realtime DB added.
  *
  *   Updated/Modified for Atlanta's app deployment. Based on the
  *   CycleTracks codebase for SFCTA.
@@ -45,7 +48,9 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings.Secure;
 import android.support.v4.app.FragmentActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -55,23 +60,37 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.firebase.client.*;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.security.token.TokenGenerator;
+import com.firebase.security.token.TokenOptions;
 import com.firebase.simplelogin.SimpleLogin;
 import com.firebase.simplelogin.SimpleLoginAuthenticatedHandler;
 import com.firebase.simplelogin.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
+import java.util.regex.*;
 
 public class MainInput extends FragmentActivity {
+    private static Random randomGenerator = new Random();
+    private static final int RANDID = randomGenerator.nextInt();
     private final static int MENU_USER_INFO = 0;
     private final static int MENU_CONTACT_US = 1;
     private final static int MENU_MAP = 2;
@@ -102,7 +121,7 @@ public class MainInput extends FragmentActivity {
     	// Check that Google Play services is available
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (ConnectionResult.SUCCESS == resultCode) {
-            Log.d("Location Updates", "Google Play services is available.");
+//            Log.d("Location Updates", "Google Play services is available.");
             return;
         // Google Play services was not available for some reason
         } else {
@@ -145,7 +164,10 @@ public class MainInput extends FragmentActivity {
 			        SharedPreferences settings = getSharedPreferences("PREFS", 0);
 			        if (settings.getAll().isEmpty()) {
                         showWelcomeDialog();
-			        }
+			        }else{
+                        //Initialize Firebase
+                        initializeFirebase();
+                    }
 					// Not first run - set up the list view of saved trips
 					ListView listSavedTrips = (ListView) findViewById(R.id.ListSavedTrips);
 					populateList(listSavedTrips);
@@ -161,23 +183,7 @@ public class MainInput extends FragmentActivity {
 		final Button startButton = (Button) findViewById(R.id.ButtonStart);
 		final Intent i = new Intent(this, RecordingActivity.class);
 
-        Firebase ref = new Firebase("https://cyclephilly.firebaseio.com");
-        SimpleLogin authClient = new SimpleLogin(ref);
-        authClient.loginAnonymously(new SimpleLoginAuthenticatedHandler() {
-            @Override
-            public void authenticated(com.firebase.simplelogin.enums.Error error, User user) {
-                if (error != null) {
-                    // Oh no! There was an error performing the check
-                    //Toast.makeText(getBaseContext(),"Firebase Error!", Toast.LENGTH_SHORT).show();
-                } else if (user == null) {
-                    // No user is logged in
-                    //Toast.makeText(getBaseContext(),"Not Firebased!", Toast.LENGTH_SHORT).show();
-                } else {
-                    // There is a logged in user
-                    //Toast.makeText(getBaseContext(),"Firebased! :"+user.getUid(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+
 		startButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 			    // Before we go to record, check GPS status
@@ -190,7 +196,144 @@ public class MainInput extends FragmentActivity {
 			    }
 			}
 		});
-	}
+
+
+
+    }
+
+    private void initializeFirebase() {
+        //Firebase stuff
+        SharedPreferences settings = getSharedPreferences("PREFS", 0);
+        SharedPreferences.Editor editor = settings.edit();
+
+        Object[] prefs = settings.getAll().values().toArray();
+        String uId = "anon";
+        Log.d("user email", "Detected " + prefs[5]);
+        String android_id = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
+        if (isEmailValid(String.valueOf(prefs[5]))){
+            //replace @ and . with _
+            uId = (String) prefs[5];
+            uId = uId.replace("@", "-");
+            uId = uId.replace(".", "_");
+            uId = uId+"_"+android_id.substring(8);
+//            Log.d("user email", "Detected " + uId);
+            editor.putString("" + 12,uId);
+        }
+        JSONObject groups = new JSONObject();
+        try {
+            groups.put("android", "true");
+            groups.put("cycle", "true");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JSONObject arbitraryPayload = new JSONObject();
+        try {
+            arbitraryPayload.put("groups", groups);
+            arbitraryPayload.put("email", prefs[5]);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+        final Firebase myConnectionsRef = new Firebase("https://cyclephilly.firebaseio.com/users/android/"+uId+"/connections");
+
+        final Firebase connectedRef = new Firebase("https://cyclephilly.firebaseio.com/.info/connected");
+        final Firebase authRef = new Firebase("https://cyclephilly.firebaseio.com/.info/authenticated");
+        // stores the timestamp of my last disconnect (the last time I was seen online)
+        final Firebase lastOnlineRef = new Firebase("https://cyclephilly.firebaseio.com/users/android/"+uId+"/lastOnline");
+        //Glass
+        Firebase glassRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/hourly/summary");
+
+        // Generate a new secure JWT
+
+
+        TokenGenerator tokenGenerator = new TokenGenerator("bi7GsULLfYOxmv47jt3gh2rgnN5XvjlnpLVTu8wy");
+        TokenOptions tokenOptions = new TokenOptions();
+        tokenOptions.setAdmin(true);
+        String token = tokenGenerator.createToken(arbitraryPayload);
+
+
+        Object listener;
+        authRef.auth(token, new Firebase.AuthListener()
+        {
+
+            public void onAuthError(FirebaseError error) {
+                System.err.println("Login Failed! " + error.getMessage());
+            }
+
+            public void onAuthSuccess(Object authData) {
+//                Log.d("user token",authData.toString());
+            }
+
+            public void onAuthRevoked(FirebaseError error) {
+                System.err.println("Authentication status was cancelled! " + error.getMessage());
+            }
+        });
+
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    // add this device to my connections list
+                    // this value could contain info about the device or a timestamp too
+                    Firebase con = myConnectionsRef.push();
+                    con.setValue(Boolean.TRUE);
+
+                    // when this device disconnects, remove it
+                    con.onDisconnect().removeValue();
+
+                    // when I disconnect, update the last time I was seen online
+                    lastOnlineRef.onDisconnect().setValue(ServerValue.TIMESTAMP);
+
+                    //
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.err.println("Listener was cancelled at .info/connected");
+            }
+        });
+
+        glassRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Object value = snapshot.getValue();
+                TextView glassState = (TextView) findViewById(R.id.textViewGlass);
+                if (value == null) {
+                    System.out.println("No Glass Device");
+                } else {
+                    Log.d("glass connected", value.toString());
+                    glassState.setText("Weather Alert: \n"+ value.toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
+
+    /**
+     * method is used for checking valid email id format.
+     *
+     * @param email
+     * @return boolean true for valid false for invalid
+     */
+    public static boolean isEmailValid(String email) {
+        boolean isValid = false;
+
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (matcher.matches()) {
+            isValid = true;
+        }
+        return isValid;
+    }
 
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -1,8 +1,11 @@
-/**	 Cycle Altanta, Copyright 2012 Georgia Institute of Technology
- *                                    Atlanta, GA. USA
+/**	 CyclePhilly, Copyright 2014 Code for Philly
+ *                                    Philadelphia, PA. USA
  *
  *   @author Christopher Le Dantec <ledantec@gatech.edu>
  *   @author Anhong Guo <guoanhong15@gmail.com>
+ *   @author Lloyd Emelle <lloyd@codeforamerica.org>
+ *
+ *   Updated/Modified for Philadelphia's app deployment. Realtime DB added.
  *
  *   Updated/Modified for Atlanta's app deployment. Based on the
  *   CycleTracks codebase for SFCTA.
@@ -38,6 +41,15 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.firebase.client.Firebase;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import android.util.Log;
 /**
  * Simple database access helper class. Defines the basic CRUD operations, and
  * gives the ability to list all trips as well as retrieve or modify a specific
@@ -52,9 +64,13 @@ import android.database.sqlite.SQLiteOpenHelper;
  * SDK**
  */
 public class DbAdapter {
+
+
     private static final int DATABASE_VERSION = 20;
 
+    private final Random random = new Random();
     public static final String K_TRIP_ROWID = "_id";
+    public static final String K_TRIP_UID = "uid";
     public static final String K_TRIP_PURP = "purp";
     public static final String K_TRIP_START = "start";
     public static final String K_TRIP_END = "endtime";
@@ -85,7 +101,7 @@ public class DbAdapter {
      * Database creation sql statement
      */
     private static final String TABLE_CREATE_TRIPS = "create table trips "
-    	+ "(_id integer primary key autoincrement, purp text, start double, endtime double, "
+    	+ "(_id integer primary key autoincrement, uid text, purp text, start double, endtime double, "
     	+ "fancystart text, fancyinfo text, distance float, note text,"
         + "lathi double, latlo double, lgthi double, lgtlo double, status integer);";
 
@@ -99,6 +115,8 @@ public class DbAdapter {
     private static final String DATA_TABLE_COORDS = "coords";
 
     private final Context mCtx;
+
+
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -182,11 +200,33 @@ public class DbAdapter {
         rowValues.put(K_TRIP_END, pt.time);
 
         success = success && (mDb.update(DATA_TABLE_TRIPS, rowValues, K_TRIP_ROWID + "=" + tripid, null) > 0);
+        //Firebase it
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+        //Fetch trip uid
+        Cursor cursor = fetchTrip(tripid);
+        String uid = cursor.getString(cursor.getColumnIndex(K_TRIP_UID));
+        Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips/"+
+                sdf.format(new Date(System.currentTimeMillis()))+"/"+uid);
+        Map<String, Object> toSet = new HashMap<String, Object>();
+        toSet.put("trip", tripid);
+        toSet.put("speed", pt.speed);
+        toSet.put("altitude", pt.altitude);
 
+        toSet.put("accuracy", pt.accuracy);
+        toSet.put("time", pt.time);
+        toSet.put("lat", pt.coords.latitude);
+        toSet.put("lng", pt.coords.longitude);
+        Firebase newPushRef = tripsRef.push();
+        newPushRef.setValue(toSet);
         return success;
     }
 
     public boolean deleteAllCoordsForTrip(long tripid) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+
+        Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips/"+
+            sdf.format(new Date(System.currentTimeMillis()))+"/"+tripid);
+        tripsRef.removeValue();
         return mDb.delete(DATA_TABLE_COORDS, K_POINT_TRIP + "=" + tripid, null) > 0;
     }
 
@@ -217,14 +257,25 @@ public class DbAdapter {
      */
     public long createTrip(String purp, double starttime, String fancystart,
             String note) {
+        char[] chars = "01233456789abcdefghijklmnopqrstuvwxyz".toCharArray();
+        StringBuilder sb = new StringBuilder();
         ContentValues initialValues = new ContentValues();
         initialValues.put(K_TRIP_PURP, purp);
         initialValues.put(K_TRIP_START, starttime);
         initialValues.put(K_TRIP_FANCYSTART, fancystart);
         initialValues.put(K_TRIP_NOTE, note);
         initialValues.put(K_TRIP_STATUS, TripData.STATUS_INCOMPLETE);
+        // Random string
+        for (int i = 0; i < 8; i++) {
+            char c = chars[random.nextInt(chars.length)];
+            sb.append(c);
+        }
+//        Log.d("uid",sb.toString());
+        initialValues.put(K_TRIP_UID, sb.toString());
 
-        return mDb.insert(DATA_TABLE_TRIPS, null, initialValues);
+        long tripid = mDb.insert(DATA_TABLE_TRIPS, null, initialValues);
+
+        return tripid;
     }
 
     public long createTrip() {
@@ -301,7 +352,7 @@ public class DbAdapter {
      */
     public Cursor fetchTrip(long rowId) throws SQLException {
         Cursor mCursor = mDb.query(true, DATA_TABLE_TRIPS, new String[] {
-                K_TRIP_ROWID, K_TRIP_PURP, K_TRIP_START, K_TRIP_FANCYSTART,
+                K_TRIP_ROWID, K_TRIP_UID, K_TRIP_PURP, K_TRIP_START, K_TRIP_FANCYSTART,
                 K_TRIP_NOTE, K_TRIP_LATHI, K_TRIP_LATLO, K_TRIP_LGTHI,
                 K_TRIP_LGTLO, K_TRIP_STATUS, K_TRIP_END, K_TRIP_FANCYINFO, K_TRIP_DISTANCE },
 

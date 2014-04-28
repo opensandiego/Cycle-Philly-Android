@@ -26,6 +26,14 @@ android {
     }
     productFlavors {
     }
+    signingConfigs {
+        release {
+            storeFile file("/Users/toby/cycle.jks")
+            storePassword "Philly123"
+            keyAlias "cfp"
+            keyPassword "Philly123"
+        }
+    }
 }
 
 dependencies {

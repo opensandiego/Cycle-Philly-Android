@@ -1,8 +1,11 @@
-/**	 Cycle Altanta, Copyright 2012 Georgia Institute of Technology
- *                                    Atlanta, GA. USA
+/**	 CyclePhilly, Copyright 2014 Code for Philly
+ *                                    Philadelphia, PA. USA
  *
  *   @author Christopher Le Dantec <ledantec@gatech.edu>
  *   @author Anhong Guo <guoanhong15@gmail.com>
+ *   @author Lloyd Emelle <lloyd@codeforamerica.org>
+ *
+ *   Updated/Modified for Philadelphia's app deployment. Realtime DB added.
  *
  *   Updated/Modified for Atlanta's app deployment. Based on the
  *   CycleTracks codebase for SFCTA.

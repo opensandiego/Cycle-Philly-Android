@@ -1,8 +1,11 @@
-/**	 Cycle Altanta, Copyright 2012 Georgia Institute of Technology
- *                                    Atlanta, GA. USA
+/**	 CyclePhilly, Copyright 2014 Code for Philly
+ *                                    Philadelphia, PA. USA
  *
  *   @author Christopher Le Dantec <ledantec@gatech.edu>
  *   @author Anhong Guo <guoanhong15@gmail.com>
+ *   @author Lloyd Emelle <lloyd@codeforamerica.org>
+ *
+ *   Updated/Modified for Philadelphia's app deployment. Realtime DB added.
  *
  *   Updated/Modified for Atlanta's app deployment. Based on the
  *   CycleTracks codebase for SFCTA.
@@ -46,6 +49,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 
+import com.firebase.client.Firebase;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -322,12 +332,14 @@ public class RecordingService extends Service implements LocationListener {
             }
 
             lastLocation = newLocation;
+
     	}
     }
 
     void notifyListeners() {
     	if (recordActivity != null) {
     		recordActivity.updateStatus(trip.numpoints, distanceTraveled, curSpeed, maxSpeed);
+
     	}
     }
 }
