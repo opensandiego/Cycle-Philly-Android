@@ -61,7 +61,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.Firebase;
+import com.firebase.client.*;
 import com.firebase.simplelogin.SimpleLogin;
 import com.firebase.simplelogin.SimpleLoginAuthenticatedHandler;
 import com.firebase.simplelogin.User;
@@ -161,23 +161,26 @@ public class MainInput extends FragmentActivity {
 		final Button startButton = (Button) findViewById(R.id.ButtonStart);
 		final Intent i = new Intent(this, RecordingActivity.class);
 
-        Firebase ref = new Firebase("https://cyclephilly.firebaseio.com");
-        SimpleLogin authClient = new SimpleLogin(ref);
-        authClient.loginAnonymously(new SimpleLoginAuthenticatedHandler() {
+        Firebase glassRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/hourly/summary");
+        glassRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void authenticated(com.firebase.simplelogin.enums.Error error, User user) {
-                if (error != null) {
-                    // Oh no! There was an error performing the check
-                    //Toast.makeText(getBaseContext(),"Firebase Error!", Toast.LENGTH_SHORT).show();
-                } else if (user == null) {
-                    // No user is logged in
-                    //Toast.makeText(getBaseContext(),"Not Firebased!", Toast.LENGTH_SHORT).show();
+            public void onDataChange(DataSnapshot snapshot) {
+                Object value = snapshot.getValue();
+                TextView glassState = (TextView) findViewById(R.id.textViewGlass);
+                if (value == null) {
+                    System.out.println("No Glass Device");
                 } else {
-                    // There is a logged in user
-                    //Toast.makeText(getBaseContext(),"Firebased! :"+user.getUid(), Toast.LENGTH_SHORT).show();
+                    Log.d("glass connected", value.toString());
+                    glassState.setText("Weather Alert: \n"+ value.toString());
                 }
             }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
         });
+
 		startButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 			    // Before we go to record, check GPS status
@@ -213,7 +216,7 @@ public class MainInput extends FragmentActivity {
 
     private void showWelcomeDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Please enter your personal details so we can learn a bit about you.\n\nThen, try to use Cycle Philly every time you ride. Your trip routes will be sent to City of Philadelphia so we can plan for better biking!\n\nThanks,\nThe Cycle Philly team")
+        builder.setMessage("Please enter your personal details so we can learn a bit about you.\n\nThen, try to use Cycle Philly every time you ride. Your trip routes will be sent to regional transportation planners to improve biking in the Philadelphia area!\n\nThanks,\nThe Cycle Philly team")
                .setCancelable(false).setTitle("Welcome to Cycle Philly!")
                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                    public void onClick(final DialogInterface dialog, final int id) {
