@@ -168,12 +168,14 @@ public class ShowMapNearby extends FragmentActivity {
 		    popup.setBackgroundColor(Color.LTGRAY);
 		    
 		    final PopupWindow pop = new PopupWindow(popup);
-		    pop.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-		    pop.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+            pop.setWindowLayoutMode(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
 		    pop.setFocusable(true);
 		    pop.setOutsideTouchable(true);
-		    pop.setBackgroundDrawable(new BitmapDrawable());
-		    
+
+            // need to do this to be able to touch to dismiss
+            pop.setBackgroundDrawable(new BitmapDrawable());
+
 		    class OnTouchAboutWindowListener implements OnTouchListener {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
@@ -185,7 +187,7 @@ public class ShowMapNearby extends FragmentActivity {
 		    OnTouchAboutWindowListener listener = new OnTouchAboutWindowListener();
 		    pop.setTouchInterceptor(listener);
 		    
-        	pop.showAtLocation(this.findViewById(R.id.map), Gravity.CENTER, 40, 20);
+        	pop.showAtLocation(this.findViewById(R.id.map), Gravity.CENTER, 0, 20);
         	
         	return true;
         }
