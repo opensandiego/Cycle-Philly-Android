@@ -42,7 +42,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -50,6 +49,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.firebase.client.Firebase;
+import com.firebase.simplelogin.SimpleLogin;
+import com.firebase.simplelogin.SimpleLoginAuthenticatedHandler;
+import com.firebase.simplelogin.User;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
+import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.ActivityRecognitionClient;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -59,19 +68,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import com.firebase.client.Firebase;
-import com.firebase.simplelogin.SimpleLogin;
-import com.firebase.simplelogin.SimpleLoginAuthenticatedHandler;
-import com.firebase.simplelogin.User;
-import com.firebase.simplelogin.enums.*;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
-import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.ActivityRecognitionClient;
-
-import org.phillyopen.mytracks.cyclephilly.R;
 
 public class RecordingActivity extends FragmentActivity implements ConnectionCallbacks, OnConnectionFailedListener {
 	
@@ -91,6 +87,7 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 	Intent fi;
 	TripData trip;
 	boolean isRecording = false;
+    boolean lostConnectivity = false;
 	Button pauseButton;
 	Button finishButton;
 	Timer timer;
@@ -152,8 +149,42 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 		ServiceConnection sc = new ServiceConnection() {
             public String fbId;
 
-            public void onServiceDisconnected(ComponentName name) { stopUpdates(); }
+            public void onServiceDisconnected(ComponentName name) {
+                // if GPS lost, pause recording, then resume when it comes back online
+                lostConnectivity = true;
+                pause("GPS connectivity lost; recording paused");
+            }
+
+            public void pause(String showMessage) {
+                isRecording = false;
+                pauseButton.setText("Resume");
+                RecordingActivity.this.setTitle("Cycle Philly - Waiting for GPS...");
+                trip.pauseStartedAt = System.currentTimeMillis();
+                RecordingActivity.this.setListener();
+                Toast.makeText(getBaseContext(), showMessage, Toast.LENGTH_LONG).show();
+            }
+
+            public void resume(String showMessage) {
+                isRecording = true;
+                pauseButton.setText("Pause");
+                RecordingActivity.this.setTitle("Cycle Philly - Recording...");
+                // Don't include pause time in trip duration
+                if (trip.pauseStartedAt > 0) {
+                    trip.totalPauseTime += (System.currentTimeMillis() - trip.pauseStartedAt);
+                    trip.pauseStartedAt = 0;
+                }
+                RecordingActivity.this.setListener();
+                Toast.makeText(getBaseContext(), showMessage, Toast.LENGTH_LONG).show();
+            }
+
 			public void onServiceConnected(ComponentName name, IBinder service) {
+                // check if we just regained GPS after losing it; resume recording if so
+                if (lostConnectivity) {
+                    resume("GPS regained.");
+                    lostConnectivity = false;
+                    return;
+                }
+
 				IRecordService rs = (IRecordService) service;
                 // Write trip to firebase
                 long tripId = rs.getCurrentTrip();
