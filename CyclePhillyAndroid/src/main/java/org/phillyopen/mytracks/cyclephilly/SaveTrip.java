@@ -53,10 +53,10 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class SaveTrip extends Activity {
 	long tripid;
@@ -189,13 +189,31 @@ public class SaveTrip extends Activity {
 				String fancyStartTime = DateFormat.getInstance().format(trip.startTime);
 
 				// "3.5 miles in 26 minutes"
-				SimpleDateFormat sdf = new SimpleDateFormat("m");
-				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-				String minutes = sdf.format(trip.endTime - trip.startTime);
-				String fancyEndInfo = String.format("%1.1f miles, %s minutes.  %s",
-						(0.0006212f * trip.distance),
-						minutes,
-						notes.getEditableText().toString());
+                Double elapsedTime = trip.endTime - trip.startTime;
+                Long elapsed = elapsedTime.longValue();
+				Long minutes = TimeUnit.MILLISECONDS.toMinutes(elapsed);
+                Long hours = TimeUnit.MILLISECONDS.toHours(elapsed);
+                NumberFormat nf = NumberFormat.getInstance();
+                nf.setMaximumFractionDigits(2);
+                nf.setMinimumFractionDigits(0);
+                String distance = nf.format(0.0006212f * trip.distance);
+
+                String fancyEndInfo;
+                if (hours > 0) {
+                    // Long ride!  Show hours, too
+                    fancyEndInfo = String.format("%s miles, %s hours, %s minutes.  %s",
+                            distance,
+                            hours,
+                            minutes,
+                            notes.getEditableText().toString());
+
+                } else {
+                    // trip less than an hour
+                    fancyEndInfo = String.format("%s miles, %s minutes.  %s",
+                            distance,
+                            minutes,
+                            notes.getEditableText().toString());
+                }
 
 				// Save the trip details to the phone database.
 				trip.updateTrip(purpose, fancyStartTime, fancyEndInfo, sendNotes);
