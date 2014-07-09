@@ -61,10 +61,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.firebase.client.Firebase;
-import com.firebase.simplelogin.SimpleLogin;
-import com.firebase.simplelogin.SimpleLoginAuthenticatedHandler;
-import com.firebase.simplelogin.User;
-import com.firebase.simplelogin.enums.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -162,13 +158,7 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 
                 Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/"+
                         sdf.format(new Date(System.currentTimeMillis())));
-                SimpleLogin authClient = new SimpleLogin(tripsRef);
-                authClient.checkAuthStatus(new SimpleLoginAuthenticatedHandler() {
-                    @Override
-                    public void authenticated(com.firebase.simplelogin.enums.Error error, User user) {
 
-                    }
-                });
                 Firebase newPushRef = tripsRef.push();
                 newPushRef.setValue(System.currentTimeMillis());
                 this.fbId = newPushRef.getName();
@@ -257,41 +247,25 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
                     }
                     // Write trip to firebase
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+                    /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
 
                     Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips-completed/"+
-                            sdf.format(new Date(System.currentTimeMillis())));
-                    SimpleLogin authClient = new SimpleLogin(tripsRef);
-                    authClient.checkAuthStatus(new SimpleLoginAuthenticatedHandler() {
-                        public String userId;
+                            sdf.format(new Date(System.currentTimeMillis())));*/
 
-                        @Override
-                        public void authenticated(com.firebase.simplelogin.enums.Error error, User user) {
-                            if (error != null) {
-                                // Oh no! There was an error performing the check
-                                //Toast.makeText(getBaseContext(),"Firebase Error!", Toast.LENGTH_SHORT).show();
-                            } else if (user == null) {
-                                // No user is logged in
-                                //Toast.makeText(getBaseContext(),"Not Firebased!", Toast.LENGTH_SHORT).show();
-                            } else {
-                                trip.Uid = user.getUid();
-                            }
-
-                        }
-                    });
-                    Map<String, Object> toSet = new HashMap<String, Object>();
+                    /*Map<String, Object> toSet = new HashMap<String, Object>();
                     toSet.put("uid", trip.Uid);
                     toSet.put("distance", trip.distance);
                     toSet.put("totalPoints", trip.numpoints);
-                    
+
                     toSet.put("startTime", trip.startTime);
                     toSet.put("endTime", trip.endTime);
                     toSet.put("endLat", trip.latestlat);
                     toSet.put("endLng", trip.latestlgt);
                     toSet.put("totalTime", trip.endTime - trip.startTime);
                     Firebase newPushRef = tripsRef.push();
-                    newPushRef.setValue(toSet);
+                    newPushRef.setValue(toSet);*/
                     //String pushedName = newPushRef.getName();
+
 					// Save trip so far (points and extent, but no purpose or notes)
 					fi = new Intent(RecordingActivity.this, SaveTrip.class);
 					trip.updateTrip("","","","");

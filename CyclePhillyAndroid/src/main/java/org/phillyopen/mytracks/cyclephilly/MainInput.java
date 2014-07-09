@@ -68,6 +68,8 @@ import com.firebase.simplelogin.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +78,7 @@ public class MainInput extends FragmentActivity {
     private final static int MENU_CONTACT_US = 1;
     private final static int MENU_MAP = 2;
     private final static int MENU_LEGAL_INFO = 3;
+    final String DEGREE  = "\u00b0";
 
     private final static int CONTEXT_RETRY = 0;
     private final static int CONTEXT_DELETE = 1;
@@ -162,6 +165,23 @@ public class MainInput extends FragmentActivity {
 		final Intent i = new Intent(this, RecordingActivity.class);
 
         Firebase glassRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/hourly/summary");
+        Firebase tempRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/currently");
+
+        tempRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Object val = dataSnapshot.getValue();
+                TextView tempState = (TextView) findViewById(R.id.tempView);
+                Double apparentTemp = (Double)((Map)val).get("apparentTemperature");
+                tempState.setText(apparentTemp.toString()+DEGREE);
+                Log.d("current temp", val.toString());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
         glassRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
