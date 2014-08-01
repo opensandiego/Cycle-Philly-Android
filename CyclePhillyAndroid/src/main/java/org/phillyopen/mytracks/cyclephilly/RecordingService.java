@@ -243,7 +243,9 @@ public class RecordingService extends Service implements LocationListener {
 	// END LocationListener implementation:
 
 	public void remindUser() {
-	    soundpool.play(bikebell, 1.0f, 1.0f, 1, 0, 1.0f);
+	    // soundpool.play(bikebell, 1.0f, 1.0f, 1, 0, 1.0f);
+	    // CA - commented out this function because I don't think it is being used correctly, the loop is set to 0 but the sound keeps repeating, likely because remindUser() function keeps getting called.
+	    //noting parameters - soundpool.play(soundID, leftVolume, rightVolume, priority, loop, rate)
 
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		int icon = R.drawable.icon25;
