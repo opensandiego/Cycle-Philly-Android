@@ -30,6 +30,7 @@
 
 package org.phillyopen.mytracks.cyclephilly;
 
+import org.phillyopen.mytracks.cyclephilly.WindDirection;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -41,6 +42,9 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,6 +59,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
@@ -70,7 +75,10 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainInput extends FragmentActivity {
@@ -163,18 +171,46 @@ public class MainInput extends FragmentActivity {
 		// And set up the record button
 		final Button startButton = (Button) findViewById(R.id.ButtonStart);
 		final Intent i = new Intent(this, RecordingActivity.class);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
 
         Firebase glassRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/hourly/summary");
         Firebase tempRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/currently");
+        Firebase cycleRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/2014"+
+                sdf.format(new Date(System.currentTimeMillis())));
 
         tempRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Object val = dataSnapshot.getValue();
-                TextView tempState = (TextView) findViewById(R.id.tempView);
+                String cardinal = "N";
+                TextView tempState = (TextView) findViewById(R.id.temperatureView);
                 Double apparentTemp = (Double)((Map)val).get("apparentTemperature");
-                tempState.setText(apparentTemp.toString()+DEGREE);
-                Log.d("current temp", val.toString());
+                Double windSpeed  = (Double)((Map)val).get("windSpeed");
+                Integer wSpeed = (int)Math.floor(windSpeed);
+                Integer windBearing = (Integer)((Map)val).get("windBearing");
+
+                WindDirection[] windDirections = WindDirection.values();
+                for(int i=0; i<windDirections.length; i++ ){
+                    if(windDirections[i].startDegree < windBearing && windDirections[i].endDegree > windBearing){
+                        //Get Cardinal direction
+                        cardinal = windDirections[i].cardinal;
+                    }
+                }
+                tempState.setText("winds "+cardinal+"at "+wSpeed.toString()+"mph. "+apparentTemp.toString()+DEGREE);
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
+        cycleRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Object val = dataSnapshot.getValue();
+                //Count Objects
             }
 
             @Override
@@ -186,12 +222,11 @@ public class MainInput extends FragmentActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Object value = snapshot.getValue();
-                TextView glassState = (TextView) findViewById(R.id.textViewGlass);
+                TextView weatherAlert = (TextView) findViewById(R.id.weatherAlert);
                 if (value == null) {
                     System.out.println("No Glass Device");
                 } else {
-                    Log.d("glass connected", value.toString());
-                    glassState.setText("Weather Alert: \n"+ value.toString());
+                    weatherAlert.setText(value.toString());
                 }
             }
 
