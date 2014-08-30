@@ -77,6 +77,7 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -175,19 +176,18 @@ public class MainInput extends FragmentActivity {
 
         Firebase glassRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/hourly/summary");
         Firebase tempRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/currently");
-        Firebase cycleRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/2014"+
-                sdf.format(new Date(System.currentTimeMillis())));
+        Firebase cycleRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/2014");
 
         tempRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Object val = dataSnapshot.getValue();
-                String cardinal = "N";
+                String cardinal = null;
                 TextView tempState = (TextView) findViewById(R.id.temperatureView);
                 Double apparentTemp = (Double)((Map)val).get("apparentTemperature");
                 Double windSpeed  = (Double)((Map)val).get("windSpeed");
                 Integer wSpeed = (int)Math.floor(windSpeed);
-                Integer windBearing = (Integer)((Map)val).get("windBearing");
+                Long windBearing = (Long)((Map)val).get("windBearing");
 
                 WindDirection[] windDirections = WindDirection.values();
                 for(int i=0; i<windDirections.length; i++ ){
@@ -196,7 +196,7 @@ public class MainInput extends FragmentActivity {
                         cardinal = windDirections[i].cardinal;
                     }
                 }
-                tempState.setText("winds "+cardinal+"at "+wSpeed.toString()+"mph. "+apparentTemp.toString()+DEGREE);
+                tempState.setText("winds "+cardinal+" at "+wSpeed.toString()+" mph. "+apparentTemp.toString()+DEGREE);
 
             }
 
@@ -209,8 +209,12 @@ public class MainInput extends FragmentActivity {
         cycleRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Object val = dataSnapshot.getValue();
+                List val = (List<Object>)dataSnapshot.getValue();
                 //Count Objects
+                for (Iterator<String> i = val.iterator();i.hasNext();){
+                    String item = i.next();
+
+                }
             }
 
             @Override
