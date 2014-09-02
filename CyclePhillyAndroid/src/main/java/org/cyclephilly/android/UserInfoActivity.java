@@ -16,12 +16,12 @@
  * 	 @author Billy Charlton <billy.charlton@sfcta.org>
  *
  */
-package org.phillyopen.mytracks.cyclephilly;
+package org.cyclephilly.android;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.phillyopen.mytracks.cyclephilly.R;
+import org.cyclephilly.android.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;

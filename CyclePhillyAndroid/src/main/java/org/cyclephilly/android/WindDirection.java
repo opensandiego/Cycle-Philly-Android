@@ -19,7 +19,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.phillyopen.mytracks.cyclephilly;
+package org.cyclephilly.android;
 
 import java.lang.Character;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package org.phillyopen.mytracks.cyclephilly;
+package org.cyclephilly.android;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;

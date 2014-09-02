@@ -1,16 +1,16 @@
-/**	 Cycle Altanta, Copyright 2012 Georgia Institute of Technology
- *                                    Atlanta, GA. USA
- *
+/**  Cycle Philly, Copyright 2014 Code for Philly
+ *   
+ *   @author Lloyd Emelle <lloyd@codeforamerica.org>
  *   @author Christopher Le Dantec <ledantec@gatech.edu>
  *   @author Anhong Guo <guoanhong15@gmail.com>
  *
- *   Updated/Modified for Atlanta's app deployment. Based on the
- *   CycleTracks codebase for SFCTA.
+ *   Updated/Modified for Philly's app deployment. Based on the
+ *   CycleTracks codebase for SFCTA and Cycle Atlanta.
  *
  *   CycleTracks, Copyright 2009,2010 San Francisco County Transportation Authority
  *                                    San Francisco, CA, USA
  *
- * 	 @author Billy Charlton <billy.charlton@sfcta.org>
+ *   @author Billy Charlton <billy.charlton@sfcta.org>
  *
  *   This file is part of CycleTracks.
  *
@@ -28,8 +28,9 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.phillyopen.mytracks.cyclephilly;
+package org.cyclephilly.android;
 
+import java.lang.String;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -65,6 +66,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import org.cyclephilly.android.R;
+
 public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
     Context mCtx;
     DbAdapter mDb;
@@ -89,6 +92,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
     public static final String USER_INCOME = "income";
     public static final String USER_RIDERTYPE = "rider_type";
     public static final String USER_RIDERHISTORY = "rider_history";
+    public static final String postUrl =  "http://www.cyclephilly.org/post/";
 
     public TripUploader(Context ctx) {
         super();
@@ -290,7 +294,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
         HttpClient client = new DefaultHttpClient(httpParameters);
         
-        final String postUrl = "http://mytracks.phillyopen.org/post/";
+
         HttpPost postRequest = new HttpPost(postUrl);
   
         try {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.phillyopen.mytracks.cyclephilly;
+package org.cyclephilly.android;
 
 import android.app.Activity;
 import android.os.Bundle;

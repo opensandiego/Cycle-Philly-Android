@@ -1,4 +1,4 @@
-package org.phillyopen.mytracks.cyclephilly;
+package org.cyclephilly.android;
 
 import android.content.Context;
 import android.graphics.Color;

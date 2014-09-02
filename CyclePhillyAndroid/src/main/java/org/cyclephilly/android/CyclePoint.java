@@ -1,11 +1,11 @@
-/**	 Cycle Altanta, Copyright 2012 Georgia Institute of Technology
- *                                    Atlanta, GA. USA
- *
+/**	 Cycle Philly, Copyright 2014 Code for Philly
+ *   
+ *   @author Lloyd Emelle <lloyd@codeforamerica.org>
  *   @author Christopher Le Dantec <ledantec@gatech.edu>
  *   @author Anhong Guo <guoanhong15@gmail.com>
  *
- *   Updated/Modified for Atlanta's app deployment. Based on the
- *   CycleTracks codebase for SFCTA.
+ *   Updated/Modified for Philly's app deployment. Based on the
+ *   CycleTracks codebase for SFCTA and Cycle Atlanta.
  *
  *   CycleTracks, Copyright 2009,2010 San Francisco County Transportation Authority
  *                                    San Francisco, CA, USA
@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.phillyopen.mytracks.cyclephilly;
+package org.cyclephilly.android;
 
 import com.google.android.gms.maps.model.LatLng;
 
