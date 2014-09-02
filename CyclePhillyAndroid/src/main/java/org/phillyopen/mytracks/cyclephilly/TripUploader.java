@@ -286,7 +286,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
         // Set the default socket timeout (SO_TIMEOUT) 
         // in milliseconds which is the timeout for waiting for data.
-        int timeoutSocket = 30000;
+        int timeoutSocket = 90000;
         HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
         HttpClient client = new DefaultHttpClient(httpParameters);
         
@@ -297,7 +297,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             postRequest.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = client.execute(postRequest);
             String responseString = convertStreamToString(response.getEntity().getContent());
-            //Log.v("httpResponse", responseString);
+            Log.v("httpResponse", responseString);
             JSONObject responseData = new JSONObject(responseString);
             
             ////////////////////////////
@@ -308,7 +308,10 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
                 mDb.open();
                 mDb.updateTripStatus(currentTripId, TripData.STATUS_SENT);
                 mDb.close();
+                Log.d("trip updated", "Sent!");
                 result = true;
+            }else{
+                Log.d("trip status", responseData.getString("status"));
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();

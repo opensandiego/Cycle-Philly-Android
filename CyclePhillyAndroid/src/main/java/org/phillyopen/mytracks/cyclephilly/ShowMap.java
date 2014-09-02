@@ -137,7 +137,11 @@ public class ShowMap extends FragmentActivity {
 			    // And upload to the cloud database, too!  W00t W00t!
                 TripUploader uploader = new TripUploader(ShowMap.this);
                 uploader.execute(trip.tripid);
-			}
+                Log.d("trip status","status not sent!");
+			}else{
+                Log.d("trip status","Status "+trip.status);
+
+            }
 
 		} catch (Exception e) {
 			Log.d("Map error",e.toString(), e);
