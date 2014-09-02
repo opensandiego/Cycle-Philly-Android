@@ -276,7 +276,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             e.printStackTrace();
             return result;
         }
-        //Log.v("PostData", nameValuePairs.toString());
+        Log.v("PostData", nameValuePairs.toString());
 
         // set connection timeouts for HTTPClient
         HttpParams httpParameters = new BasicHttpParams();
@@ -301,7 +301,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             JSONObject responseData = new JSONObject(responseString);
             
             ////////////////////////////
-            //Log.d("server response", responseData.toString());
+            Log.d("server response", responseData.toString());
             ///////////////////////////
             
             if (responseData.getString("status").equals("success")) {
@@ -332,7 +332,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         Boolean result = uploadOneTrip(tripid[0]);
         
         // TODO: not always working?
-        //Log.d("uploading trip", tripid[0].toString());
+        Log.d("uploading trip", tripid[0].toString());
         //////////////////////////////////////////////
 
         // Then, automatically try and send previously-completed trips
@@ -345,7 +345,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
             //pd.setMessage("Sent. You have previously unsent trips; submitting those now.");
         	
         	////////////
-        	//Log.d("previously unsent count", cur.getCount() + " previously unsent trips");
+        	Log.d("previously unsent count", cur.getCount() + " previously unsent trips");
         	////////////
         	
             while (!cur.isAfterLast()) {
@@ -359,7 +359,7 @@ public class TripUploader extends AsyncTask <Long, Integer, Boolean> {
         for (Long trip: unsentTrips) {
             result &= uploadOneTrip(trip);
             ///////////////
-            //Log.d("uploading unsent trip", trip.toString());
+            Log.d("uploading unsent trip", trip.toString());
             ///////////////
             
         }
