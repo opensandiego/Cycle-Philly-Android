@@ -1,4 +1,4 @@
-package org.cyclephilly.android;
+package org.phillyopen.mytracks.cyclephilly;
 
 import java.net.URL;
 import java.net.MalformedURLException;

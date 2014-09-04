@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 //
-package org.cyclephilly.android;
+package org.phillyopen.mytracks.cyclephilly;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.cyclephilly.android.R;
+import org.phillyopen.mytracks.cyclephilly.R;
 
 public class ShowMap extends FragmentActivity {
 	List<Polyline> mapTracks;

@@ -19,9 +19,8 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cyclephilly.android;
+package org.phillyopen.mytracks.cyclephilly;
 
-import java.lang.Character;
 import java.util.Arrays;
 import java.lang.String;
 

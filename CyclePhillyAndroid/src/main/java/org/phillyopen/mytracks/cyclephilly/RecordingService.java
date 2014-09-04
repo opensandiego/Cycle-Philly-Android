@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cyclephilly.android;
+package org.phillyopen.mytracks.cyclephilly;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -49,7 +49,7 @@ import android.os.IBinder;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.cyclephilly.android.R;
+import org.phillyopen.mytracks.cyclephilly.R;
 
 public class RecordingService extends Service implements LocationListener {
 	RecordingActivity recordActivity;

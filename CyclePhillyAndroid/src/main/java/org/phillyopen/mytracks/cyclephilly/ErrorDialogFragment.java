@@ -1,4 +1,4 @@
-package org.cyclephilly.android;
+package org.phillyopen.mytracks.cyclephilly;
 
 import android.app.Dialog;
 import android.os.Bundle;

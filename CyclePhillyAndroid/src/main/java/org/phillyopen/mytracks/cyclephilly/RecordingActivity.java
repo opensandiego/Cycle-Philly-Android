@@ -28,7 +28,7 @@
  *   along with CycleTracks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cyclephilly.android;
+package org.phillyopen.mytracks.cyclephilly;
 
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -42,7 +42,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -53,9 +52,7 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,7 +64,7 @@ import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailed
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.ActivityRecognitionClient;
 
-import org.cyclephilly.android.R;
+import org.phillyopen.mytracks.cyclephilly.R;
 
 public class RecordingActivity extends FragmentActivity implements ConnectionCallbacks, OnConnectionFailedListener {
 	
