@@ -173,7 +173,7 @@ public class MainInput extends FragmentActivity {
                 Object val = dataSnapshot.getValue();
                 String cardinal = null;
                 TextView tempState = (TextView) findViewById(R.id.temperatureView);
-                Double apparentTemp = (Double)((Map)val).get("apparentTemperature");
+                String apparentTemp = ((Map)val).get("apparentTemperature").toString();
                 Double windSpeed  = (Double)((Map)val).get("windSpeed");
                 Integer wSpeed = (int)Math.floor(windSpeed);
                 Long windBearing = (Long)((Map)val).get("windBearing");
