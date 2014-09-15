@@ -143,22 +143,10 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 		Intent rService = new Intent(this, RecordingService.class);
 		startService(rService);
 		ServiceConnection sc = new ServiceConnection() {
-            public String fbId;
-
             public void onServiceDisconnected(ComponentName name) { stopUpdates(); }
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				IRecordService rs = (IRecordService) service;
-                // Write trip to firebase
-                long tripId = rs.getCurrentTrip();
-
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
-
-                Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/"+
-                        sdf.format(new Date(System.currentTimeMillis())));
-
-                Firebase newPushRef = tripsRef.push();
-                newPushRef.setValue(System.currentTimeMillis());
-                this.fbId = newPushRef.getName();
+//                touchFirebase();
                 switch (rs.getState()) {
 					case RecordingService.STATE_IDLE:
 						trip = TripData.createTrip(RecordingActivity.this);
@@ -360,6 +348,19 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
             double avgSpeed = 3600.0 * 0.6212 * this.curDistance / dd;
             txtAvgSpeed.setText(String.format("%1.1f mph", avgSpeed));
         }
+    }
+
+    void touchFirebase(){
+        // Write trip to firebase
+        String fbId;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+
+        Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/"+
+                sdf.format(new Date(System.currentTimeMillis())));
+
+        Firebase newPushRef = tripsRef.push();
+        newPushRef.setValue(System.currentTimeMillis());
+        fbId = newPushRef.getName();
     }
 
     // Don't do pointless UI updates if the activity isn't being shown.

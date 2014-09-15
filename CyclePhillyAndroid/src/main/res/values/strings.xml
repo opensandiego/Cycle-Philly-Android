@@ -7,7 +7,7 @@
 	<string name="previous_trips">Saved Trips:</string>
 	<string name="startNewTrip">Start Trip!</string>
     <string name="weatherAlert"></string>
-    <string name="currentTemperature">winds NW 15mph 90.85</string>
+    <string name="currentTemperature"> -- </string>
     <string name="cycleReferenceTripsStarted">https://cyclephilly.firebaseio.com/trips-started/2014/</string>
     <!--<string name="tripsStats"> trips today |  trips total</string>-->
     <string name="tripsStats"></string>
