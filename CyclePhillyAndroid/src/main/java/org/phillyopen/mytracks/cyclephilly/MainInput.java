@@ -66,6 +66,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -76,11 +77,15 @@ public class MainInput extends FragmentActivity {
     private final static int MENU_CONTACT_US = 1;
     private final static int MENU_MAP = 2;
     private final static int MENU_LEGAL_INFO = 3;
+    public final static int PREF_ANONID = 13;
     final String DEGREE  = "\u00b0";
+    public final static String FIREBASE_REF = "https://cyclephilly.firebaseio.com";
 
     private final static int CONTEXT_RETRY = 0;
     private final static int CONTEXT_DELETE = 1;
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
+    private ValueEventListener connectedListener;
 
     DbAdapter mDb;
     
@@ -122,7 +127,9 @@ public class MainInput extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
 
+        final Firebase ref = new Firebase("https://cyclephilly.firebaseio.com");
 		// Let's handle some launcher lifecycle issues:
 		// If we're recording or saving right now, jump to the existing activity.
 		// (This handles user who hit BACK button while recording)
@@ -144,9 +151,13 @@ public class MainInput extends FragmentActivity {
 				} else {
 					// Idle. First run? Switch to user prefs screen if there are no prefs stored yet
 			        SharedPreferences settings = getSharedPreferences("PREFS", 0);
+                    String anon = settings.getString(""+PREF_ANONID,"NADA");
+
 			        if (settings.getAll().isEmpty()) {
                         showWelcomeDialog();
-			        }
+			        }else if(anon == "NADA"){
+                        showWelcomeDialog();
+                    }
 					// Not first run - set up the list view of saved trips
 					ListView listSavedTrips = (ListView) findViewById(R.id.ListSavedTrips);
 					populateList(listSavedTrips);
@@ -162,10 +173,12 @@ public class MainInput extends FragmentActivity {
 		final Button startButton = (Button) findViewById(R.id.ButtonStart);
 		final Intent i = new Intent(this, RecordingActivity.class);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+        SharedPreferences settings = getSharedPreferences("PREFS", 0);
+        final String anon = settings.getString(""+PREF_ANONID,"NADA");
 
         Firebase glassRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/hourly/summary");
         Firebase tempRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/currently");
-        Firebase cycleRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/2014");
+        Firebase cycleRef = new Firebase("https://cyclephilly.firebaseio.com/users");
 
         tempRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -173,11 +186,13 @@ public class MainInput extends FragmentActivity {
                 Object val = dataSnapshot.getValue();
                 String cardinal = null;
                 TextView tempState = (TextView) findViewById(R.id.temperatureView);
+//                TextView liveTemp = (TextView) findViewById(R.id.warning);
                 String apparentTemp = ((Map)val).get("apparentTemperature").toString();
-                Double windSpeed  = (Double)((Map)val).get("windSpeed");
-                Integer wSpeed = (int)Math.floor(windSpeed);
+                String windSpeed  = ((Map)val).get("windSpeed").toString();
+                Double windValue = (Double)((Map)val).get("windSpeed");
                 Long windBearing = (Long)((Map)val).get("windBearing");
 
+//                liveTemp.setText(" "+apparentTemp.toString()+DEGREE);
                 WindDirection[] windDirections = WindDirection.values();
                 for(int i=0; i<windDirections.length; i++ ){
                     if(windDirections[i].startDegree < windBearing && windDirections[i].endDegree > windBearing){
@@ -185,7 +200,12 @@ public class MainInput extends FragmentActivity {
                         cardinal = windDirections[i].cardinal;
                     }
                 }
-                tempState.setText("winds "+cardinal+" at "+wSpeed.toString()+" mph. "+apparentTemp.toString()+DEGREE);
+
+                if(windValue > 4){
+                    tempState.setTextColor(0xFFDC143C);
+                    tempState.setText("winds "+cardinal+" at "+windSpeed+" mph. Ride with caution.");
+                }
+
 
             }
 
@@ -195,20 +215,23 @@ public class MainInput extends FragmentActivity {
             }
         });
 
-        cycleRef.addValueEventListener(new ValueEventListener() {
+        connectedListener = ref.getRoot().child(".info/connected").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List val = (List<Object>)dataSnapshot.getValue();
-                //Count Objects
-                for (Iterator<String> i = val.iterator();i.hasNext();){
-                    String item = i.next();
-
+                boolean connected = (Boolean)dataSnapshot.getValue();
+                if (connected) {
+                    System.out.println("connected "+dataSnapshot.toString());
+                    Firebase cycleRef = new Firebase(FIREBASE_REF+"/"+anon+"/connections");
+                    cycleRef.setValue(Boolean.TRUE);
+                    cycleRef.onDisconnect().removeValue();
+                } else {
+                    System.out.println("disconnected");
                 }
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
+            public void onCancelled(FirebaseError error) {
+                // No-op
             }
         });
         glassRef.addValueEventListener(new ValueEventListener() {
@@ -264,7 +287,7 @@ public class MainInput extends FragmentActivity {
 
     private void showWelcomeDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Please enter your personal details so we can learn a bit about you.\n\nThen, try to use Cycle Philly every time you ride. Your trip routes will be sent to regional transportation planners to improve biking in the Philadelphia area!\n\nThanks,\nThe Cycle Philly team")
+        builder.setMessage("Please update your personal details so we can learn a bit about you.\n\nThen, try to use Cycle Philly every time you ride. Your trip routes will be sent to regional transportation planners to improve biking in the Philadelphia area!\n\nThanks,\nThe Cycle Philly team")
                .setCancelable(false).setTitle("Welcome to Cycle Philly!")
                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                    public void onClick(final DialogInterface dialog, final int id) {

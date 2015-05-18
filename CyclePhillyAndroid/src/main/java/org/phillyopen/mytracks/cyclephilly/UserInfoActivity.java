@@ -18,9 +18,13 @@
  */
 package org.phillyopen.mytracks.cyclephilly;
 
+import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
+import org.json.JSONObject;
 import org.phillyopen.mytracks.cyclephilly.R;
 import android.app.Activity;
 import android.content.Intent;
@@ -40,6 +44,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ServerValue;
+import com.firebase.security.token.TokenGenerator;
+
 public class UserInfoActivity extends Activity {
 	public final static int PREF_AGE = 1;
 	public final static int PREF_ZIPHOME = 2;
@@ -52,6 +62,10 @@ public class UserInfoActivity extends Activity {
 	public final static int PREF_INCOME = 9;
 	public final static int PREF_RIDERTYPE = 10;
 	public final static int PREF_RIDERHISTORY = 11;
+    public final static int PREF_ANONID = 13;
+    public final static String FIRE_REF = "https://cyclephilly.firebaseio.com";
+    public final static String FIRE_TOKEN = "bi7GsULLfYOxmv47jt3gh2rgnN5XvjlnpLVTu8wy";
+    public final char[] CHARSET_AZ_09 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toCharArray();
 
 	private static final String TAG = "UserPrefActivity";
 
@@ -64,6 +78,8 @@ public class UserInfoActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.userprefs);
+        //Firebase Init
+        Firebase.setAndroidContext(this);
 
 		// Don't pop up the soft keyboard until user clicks!
 		this.getWindow().setSoftInputMode(
@@ -164,7 +180,7 @@ public class UserInfoActivity extends Activity {
 	private void savePreferences() {
 		// Save user preferences. We need an Editor object to
 		// make changes. All objects are from android.context.Context
-		SharedPreferences settings = getSharedPreferences("PREFS", 0);
+		final SharedPreferences settings = getSharedPreferences("PREFS", 0);
 		SharedPreferences.Editor editor = settings.edit();
 
 		editor.putInt("" + PREF_AGE, ((Spinner) findViewById(R.id.ageSpinner))
@@ -194,6 +210,14 @@ public class UserInfoActivity extends Activity {
 		editor.putString("" + PREF_EMAIL,
 				((EditText) findViewById(R.id.TextEmail)).getText().toString());
 		editor.putInt("" + PREF_CYCLEFREQ, ((SeekBar) findViewById(R.id.SeekCycleFreq)).getProgress());
+
+        //Anon ID creator
+        String anon = settings.getString(""+PREF_ANONID,"NADA");
+        if(anon == "NADA"){
+
+
+            editor.putString("" + PREF_ANONID,randomString(CHARSET_AZ_09,8));
+        }
 
 		RadioGroup rbg = (RadioGroup) findViewById(R.id.RadioGroup01);
 		if (rbg.getCheckedRadioButtonId() == R.id.ButtonMale) {
@@ -244,6 +268,51 @@ public class UserInfoActivity extends Activity {
 
 		// Don't forget to commit your edits!!!
 		editor.commit();
+        //Update firebase
+        final Firebase ref = new Firebase(FIRE_REF);
+        String deviceName = android.os.Build.MODEL;
+        String deviceMan = android.os.Build.MANUFACTURER;
+        Map<String,  Object> payload = new HashMap<String, Object>();
+        payload.put("email", ((EditText) findViewById(R.id.TextEmail)).getText().toString());
+        payload.put("device",deviceName);
+
+        payload.put("uid", settings.getString(""+PREF_ANONID,"anon"));
+        System.out.println("uid: "+settings.getString(""+PREF_ANONID,"anon"));
+
+        JSONObject pl=new JSONObject(payload);
+        TokenGenerator tokenGenerator = new TokenGenerator(FIRE_TOKEN);
+        String token = tokenGenerator.createToken(pl);
+
+        //Re-authenticate
+        ref.unauth();
+        ref.authWithCustomToken(token, new Firebase.AuthResultHandler(){
+            @Override
+            public void onAuthenticationError(FirebaseError error) {
+                System.err.println("Login Failed! " + error.getMessage());
+            }
+            @Override
+            public void onAuthenticated(AuthData authData) {
+                System.out.println("Login Succeeded: ! "+authData.getAuth().get("uid"));
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("provider", authData.getProvider());
+                map.put("lastLogin", ""+System.currentTimeMillis());
+                if(authData.getAuth().containsKey("email")) {
+                    map.put("email", authData.getAuth().get("email").toString());
+                }
+                if(authData.getAuth().containsKey("device")) {
+                    map.put("device", authData.getAuth().get("device").toString());
+                }
+                String gender = "unknown";
+                if(settings.getInt(""+PREF_GENDER,0) == 2){
+                    gender = "male";
+                }else if (settings.getInt(""+PREF_GENDER,0) == 1){
+                    gender = "female";
+                }
+                map.put("gender", gender);
+                ref.child("users").child(authData.getAuth().get("uid").toString()).setValue(map);
+            }
+        });
+
 		Toast.makeText(getBaseContext(), "User preferences saved.",
 				Toast.LENGTH_SHORT).show();
 	}
@@ -267,4 +336,15 @@ public class UserInfoActivity extends Activity {
 		}
 		return false;
 	}
+
+    public static String randomString(char[] characterSet, int length) {
+        Random random = new SecureRandom();
+        char[] result = new char[length];
+        for (int i = 0; i < result.length; i++) {
+            // picks a random index out of character set > random character
+            int randomCharIndex = random.nextInt(characterSet.length);
+            result[i] = characterSet[randomCharIndex];
+        }
+        return new String(result);
+    }
 }

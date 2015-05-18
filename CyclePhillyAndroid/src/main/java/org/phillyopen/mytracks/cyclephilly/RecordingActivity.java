@@ -111,7 +111,7 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+        Firebase.setAndroidContext(this);
 		setContentView(R.layout.recording);
 
         txtStat =     (TextView) findViewById(R.id.TextRecordStats);
@@ -146,7 +146,7 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
             public void onServiceDisconnected(ComponentName name) { stopUpdates(); }
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				IRecordService rs = (IRecordService) service;
-//                touchFirebase();
+                touchFirebase();
                 switch (rs.getState()) {
 					case RecordingService.STATE_IDLE:
 						trip = TripData.createTrip(RecordingActivity.this);
@@ -260,7 +260,15 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 					Toast.makeText(getBaseContext(),"No GPS data acquired; nothing to submit.", Toast.LENGTH_SHORT).show();
 
 					cancelRecording();
-
+//                    if (trip.pauseStartedAt> 0) {
+//                        trip.totalPauseTime += (System.currentTimeMillis() - trip.pauseStartedAt);
+//                    }
+//                    if (trip.totalPauseTime > 0) {
+//                        trip.endTime = System.currentTimeMillis() - trip.totalPauseTime;
+//                    }
+//
+//                    fi = new Intent(RecordingActivity.this, SaveTrip.class);
+//                    trip.updateTrip("","","","");
 			    	// Go back to main screen
 					fi = new Intent(RecordingActivity.this, MainInput.class);
 					fi.putExtra("keep", true);
@@ -352,7 +360,7 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 
     void touchFirebase(){
         // Write trip to firebase
-        String fbId;
+//        String fbId;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
 
         Firebase tripsRef = new Firebase("https://cyclephilly.firebaseio.com/trips-started/"+
@@ -360,7 +368,7 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 
         Firebase newPushRef = tripsRef.push();
         newPushRef.setValue(System.currentTimeMillis());
-        fbId = newPushRef.getName();
+//        fbId = newPushRef.getName();
     }
 
     // Don't do pointless UI updates if the activity isn't being shown.

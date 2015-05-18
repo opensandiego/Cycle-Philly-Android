@@ -26,11 +26,15 @@ android {
     }
     productFlavors {
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
+    }
 }
 
 dependencies {
     compile 'com.android.support:support-v4:19.1.+'
     compile 'com.google.android.gms:play-services:5.0.89'
-    compile files('libs/firebase-client-jvm.jar')
-    compile files('libs/firebase-simple-login.jar')
+    compile 'com.firebase:firebase-client-android:1.1.1+'
 }

@@ -5,6 +5,7 @@
     android:layout_height="fill_parent"
     android:id="@+id/main"
     android:weightSum="1"
+    style="@android:style/Theme.Holo.Light"
     android:background="#ff020202">
 
 
@@ -26,10 +27,25 @@
             android:paddingRight="10dip"
             android:autoText="true"
             android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/compass" />
+
+        <TextView
+            android:layout_width="192dp"
+            android:layout_height="wrap_content"
+            android:text="@string/tripsStats"
+            android:id="@+id/textView"
+            android:textStyle="bold"
+            android:textSize="12dp"
+            android:textColor="#ff29ace9"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:layout_alignTop="@+id/temperatureView"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_toRightOf="@+id/compass"
-            android:layout_toEndOf="@+id/compass" />
+            android:layout_above="@+id/weatherAlert"
+            android:layout_toRightOf="@+id/temperatureView" />
 
         <TextView
             android:layout_width="192dp"
