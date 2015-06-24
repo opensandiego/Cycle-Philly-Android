@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="recording_title">Cycle Philly</string>
+	<string name="recording_title">Cycle Philly</string>
+	<string name="icon_sun">&#xe601;</string>
 	<string name="app_name">Cycle Philly</string>
 	<string name="postUrl">http://www.cyclephilly.org/post/</string>
 	<string name="icon">Bicycle Parking</string>
@@ -18,6 +19,8 @@
 	<string name="promptPurpose">Select the main purpose of this trip</string>
 	<string name="uploadProgressTitle">Sending…</string>
 	<string name="uploadProgressMessage">Sending your trip.\n\nThanks for using Cycle Philly!</string>
+
+	<string name="cloudy">&#xe61d;</string>
 	<string-array name="ageArray">
 	    <item></item>
 	    <item>Less than 18</item>

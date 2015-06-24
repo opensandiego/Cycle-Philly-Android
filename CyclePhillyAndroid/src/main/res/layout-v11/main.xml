@@ -5,7 +5,6 @@
     android:layout_height="fill_parent"
     android:id="@+id/main"
     android:weightSum="1"
-    style="@android:style/Theme.Holo.Light"
     android:background="#ff020202">
 
 
@@ -16,7 +15,24 @@
         android:background="#62288abe">
 
         <TextView
-            android:layout_width="185dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/weatherView"
+            android:textStyle="bold"
+            style="?android:attr/buttonStyleSmall"
+            android:textSize="18dp"
+            android:textColor="#ffdddddd"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:paddingTop="5dp"
+            android:autoText="true"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/transparent" />
+
+        <TextView
+            android:layout_width="285dp"
             android:layout_height="wrap_content"
             android:text="@string/currentTemperature"
             android:id="@+id/temperatureView"
@@ -25,27 +41,13 @@
             android:textColor="#ffdddddd"
             android:paddingLeft="10dip"
             android:paddingRight="10dip"
+            android:paddingTop="5dp"
             android:autoText="true"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/compass" />
-
-        <TextView
-            android:layout_width="192dp"
-            android:layout_height="wrap_content"
-            android:text="@string/tripsStats"
-            android:id="@+id/textView"
-            android:textStyle="bold"
-            android:textSize="12dp"
-            android:textColor="#ff29ace9"
-            android:paddingLeft="10dip"
-            android:paddingRight="10dip"
-            android:layout_gravity="center"
-            android:clickable="false"
-            android:layout_alignTop="@+id/temperatureView"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_above="@+id/weatherAlert"
-            android:layout_toRightOf="@+id/temperatureView" />
+            android:layout_toEndOf="@+id/compass"
+            android:layout_toRightOf="@+id/compass" />
 
         <TextView
             android:layout_width="192dp"
@@ -60,20 +62,19 @@
             android:layout_gravity="right"
             android:clickable="false"
             android:layout_below="@+id/temperatureView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/weatherView"
+            android:layout_toEndOf="@+id/weatherView" />
 
         <ImageView
             android:layout_width="21dip"
             android:layout_height="21dip"
             android:id="@+id/compass"
             android:src="@android:drawable/ic_menu_compass"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_above="@+id/weatherAlert" />
+            android:layout_above="@+id/weatherAlert"
+            android:layout_toRightOf="@+id/weatherView"
+            android:layout_toEndOf="@+id/weatherView" />
 
     </RelativeLayout>
 
@@ -87,15 +88,7 @@
         android:textColor="#ff40cdff" />
 
     <TextView android:layout_height="wrap_content" android:id="@+id/TextViewPreviousTrips" android:text="@string/previous_trips" android:layout_width="fill_parent" android:gravity="center"
-    android:layout_weight="0.38"></TextView><ListView android:layout_height="138dp" android:id="@+id/ListSavedTrips" android:layout_width="fill_parent"
+        android:layout_weight="0.38"></TextView><ListView android:layout_height="138dp" android:id="@+id/ListSavedTrips" android:layout_width="fill_parent"
     android:layout_weight="0.36"></ListView>
-
-
-
-
-
-
-
-
 
 </LinearLayout>

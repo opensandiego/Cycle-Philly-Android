@@ -41,6 +41,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Typeface;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -86,6 +87,8 @@ public class MainInput extends FragmentActivity {
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     private ValueEventListener connectedListener;
+    TextView weatherText;
+    Typeface weatherFont;
 
     DbAdapter mDb;
     
@@ -134,6 +137,13 @@ public class MainInput extends FragmentActivity {
 		// If we're recording or saving right now, jump to the existing activity.
 		// (This handles user who hit BACK button while recording)
 		setContentView(R.layout.main);
+        weatherFont = Typeface.createFromAsset(getAssets(), "cyclephilly.ttf");
+
+        weatherText = (TextView) findViewById(R.id.weatherView);
+        weatherText.setTypeface(weatherFont);
+        weatherText.setText(R.string.cloudy);
+
+
 		
 		Intent rService = new Intent(this, RecordingService.class);
 		ServiceConnection sc = new ServiceConnection() {
@@ -176,7 +186,7 @@ public class MainInput extends FragmentActivity {
         SharedPreferences settings = getSharedPreferences("PREFS", 0);
         final String anon = settings.getString(""+PREF_ANONID,"NADA");
 
-        Firebase glassRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/hourly/summary");
+        Firebase weatherRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia");
         Firebase tempRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/currently");
         Firebase cycleRef = new Firebase("https://cyclephilly.firebaseio.com/users");
 
@@ -185,6 +195,7 @@ public class MainInput extends FragmentActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Object val = dataSnapshot.getValue();
                 String cardinal = null;
+
                 TextView tempState = (TextView) findViewById(R.id.temperatureView);
 //                TextView liveTemp = (TextView) findViewById(R.id.warning);
                 String apparentTemp = ((Map)val).get("apparentTemperature").toString();
@@ -203,7 +214,7 @@ public class MainInput extends FragmentActivity {
 
                 if(windValue > 4){
                     tempState.setTextColor(0xFFDC143C);
-                    tempState.setText("winds "+cardinal+" at "+windSpeed+" mph. Ride with caution.");
+                    tempState.setText("winds " + cardinal + " at " + windSpeed + " mph. Ride with caution.");
                 }
 
 
@@ -222,8 +233,8 @@ public class MainInput extends FragmentActivity {
                 if (connected) {
                     System.out.println("connected "+dataSnapshot.toString());
                     Firebase cycleRef = new Firebase(FIREBASE_REF+"/"+anon+"/connections");
-                    cycleRef.setValue(Boolean.TRUE);
-                    cycleRef.onDisconnect().removeValue();
+//                    cycleRef.setValue(Boolean.TRUE);
+//                    cycleRef.onDisconnect().removeValue();
                 } else {
                     System.out.println("disconnected");
                 }
@@ -234,15 +245,18 @@ public class MainInput extends FragmentActivity {
                 // No-op
             }
         });
-        glassRef.addValueEventListener(new ValueEventListener() {
+        weatherRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Object value = snapshot.getValue();
+                Object hourly = ((Map) value).get("currently");
+                String alert = ((Map) hourly).get("summary").toString();
                 TextView weatherAlert = (TextView) findViewById(R.id.weatherAlert);
+
                 if (value == null) {
                     System.out.println("No Glass Device");
                 } else {
-                    weatherAlert.setText(value.toString());
+                    weatherAlert.setText(alert);
                 }
             }
 
