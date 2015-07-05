@@ -63,6 +63,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.*;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
+import com.firebase.geofire.LocationCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -188,7 +193,7 @@ public class MainInput extends FragmentActivity {
 
         Firebase weatherRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia");
         Firebase tempRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/currently");
-        Firebase cycleRef = new Firebase("https://cyclephilly.firebaseio.com/users");
+        Firebase indegoRef = new Firebase("https://phl.firebaseio.com/indego/_geofire");
 
         tempRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -265,6 +270,36 @@ public class MainInput extends FragmentActivity {
 
             }
         });
+
+        GeoFire geoFire = new GeoFire(indegoRef);
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(39.9544271, -75.1500577), 0.8);
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+                System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(FirebaseError error) {
+
+            }
+        });
+
 
 		startButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {

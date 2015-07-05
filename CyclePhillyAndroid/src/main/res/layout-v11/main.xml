@@ -91,4 +91,13 @@
         android:layout_weight="0.38"></TextView><ListView android:layout_height="138dp" android:id="@+id/ListSavedTrips" android:layout_width="fill_parent"
     android:layout_weight="0.36"></ListView>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="0.32"
+        android:background="#ff0082cb">
+        <ListView android:layout_height="138dp" android:id="@+id/ListNearbyIndego" android:layout_width="fill_parent"
+            android:layout_weight="0.36"></ListView>
+    </RelativeLayout>
+
 </LinearLayout>
