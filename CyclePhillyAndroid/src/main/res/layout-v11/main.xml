@@ -78,7 +78,24 @@
 
     </RelativeLayout>
 
-    <Button android:layout_height="wrap_content" android:id="@+id/ButtonStart" android:text="@string/startNewTrip" android:textStyle="bold" android:layout_width="fill_parent" android:drawableLeft="@drawable/bike" android:layout_margin="8sp" android:hapticFeedbackEnabled="true" android:textSize="24sp"></Button>
+    <Button android:layout_height="95dp" android:id="@+id/ButtonStart" android:text="@string/startNewTrip" android:textStyle="bold" android:layout_width="fill_parent" android:drawableLeft="@drawable/bike" android:layout_margin="8sp" android:hapticFeedbackEnabled="true" android:textSize="24sp"></Button>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="0.61"
+        android:background="#ffffffff">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ride_indego_nearest"
+            android:textSize="25dp"
+            android:id="@+id/locationDebug"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+        <!--<ListView android:layout_height="138dp" android:id="@+id/ListNearbyIndego" android:layout_width="fill_parent"-->
+            <!--android:layout_weight="0.36"></ListView>-->
+    </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -88,16 +105,7 @@
         android:textColor="#ff40cdff" />
 
     <TextView android:layout_height="wrap_content" android:id="@+id/TextViewPreviousTrips" android:text="@string/previous_trips" android:layout_width="fill_parent" android:gravity="center"
-        android:layout_weight="0.38"></TextView><ListView android:layout_height="138dp" android:id="@+id/ListSavedTrips" android:layout_width="fill_parent"
-    android:layout_weight="0.36"></ListView>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_weight="0.32"
-        android:background="#ff0082cb">
-        <ListView android:layout_height="138dp" android:id="@+id/ListNearbyIndego" android:layout_width="fill_parent"
-            android:layout_weight="0.36"></ListView>
-    </RelativeLayout>
+        android:layout_weight="0.22"></TextView><ListView android:layout_height="138dp" android:id="@+id/ListSavedTrips" android:layout_width="fill_parent"
+    android:layout_weight="0.15"></ListView>
 
 </LinearLayout>

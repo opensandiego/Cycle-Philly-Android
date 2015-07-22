@@ -42,6 +42,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.graphics.Typeface;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,6 +73,7 @@ import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.geofire.LocationCallback;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -91,8 +95,12 @@ public class MainInput extends FragmentActivity {
     private final static int CONTEXT_DELETE = 1;
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
+    private LocationManager locationManager = null;
+    private LatLng mySpot = null;
+
     private ValueEventListener connectedListener;
     TextView weatherText;
+    private TextView debugLocation;
     Typeface weatherFont;
 
     DbAdapter mDb;
@@ -138,7 +146,8 @@ public class MainInput extends FragmentActivity {
         Firebase.setAndroidContext(this);
 
         final Firebase ref = new Firebase("https://cyclephilly.firebaseio.com");
-		// Let's handle some launcher lifecycle issues:
+        final Firebase phlref = new Firebase("https://phl.firebaseio.com");
+        // Let's handle some launcher lifecycle issues:
 		// If we're recording or saving right now, jump to the existing activity.
 		// (This handles user who hit BACK button while recording)
 		setContentView(R.layout.main);
@@ -194,6 +203,21 @@ public class MainInput extends FragmentActivity {
         Firebase weatherRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia");
         Firebase tempRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/currently");
         Firebase indegoRef = new Firebase("https://phl.firebaseio.com/indego/_geofire");
+
+
+
+        phlref.child("indego").child("kiosks").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Kiosks updated
+                myCurrentLocation();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
         tempRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -257,12 +281,7 @@ public class MainInput extends FragmentActivity {
                 Object hourly = ((Map) value).get("currently");
                 String alert = ((Map) hourly).get("summary").toString();
                 TextView weatherAlert = (TextView) findViewById(R.id.weatherAlert);
-
-                if (value == null) {
-                    System.out.println("No Glass Device");
-                } else {
-                    weatherAlert.setText(alert);
-                }
+                weatherAlert.setText(alert);
             }
 
             @Override
@@ -271,8 +290,33 @@ public class MainInput extends FragmentActivity {
             }
         });
 
+        // Acquire a reference to the system Location Manager
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+
+                mySpot=new LatLng(location.getLatitude(), location.getLongitude());
+                makeUseOfNewLocation(location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+// Register the listener with the Location Manager to receive location updates
+
+
         GeoFire geoFire = new GeoFire(indegoRef);
-        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(39.9544271, -75.1500577), 0.8);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        mySpot = myCurrentLocation();
+        System.out.println(mySpot.toString());
+
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mySpot.longitude,mySpot.latitude), 0.5);
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
@@ -291,12 +335,12 @@ public class MainInput extends FragmentActivity {
 
             @Override
             public void onGeoQueryReady() {
-
+                System.out.println("GEO READY");
             }
 
             @Override
             public void onGeoQueryError(FirebaseError error) {
-
+                System.out.println("GEO error");
             }
         });
 
@@ -314,6 +358,31 @@ public class MainInput extends FragmentActivity {
 			}
 		});
 	}
+
+    private LatLng myCurrentLocation(){
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        Location loc = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+        if (loc != null) {
+            return new LatLng(loc.getLatitude(), loc.getLongitude());
+        } else {
+            // try with coarse accuracy
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            loc = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+
+            if (loc == null) {
+                return new LatLng(39.952451,-75.163664); // city hall by default
+            }
+        }
+        return null;
+    }
+
+    private void makeUseOfNewLocation(Location location) {
+        System.out.println(location.toString());
+        System.out.println("Here.");
+        debugLocation = (TextView) findViewById(R.id.locationDebug);
+        debugLocation.setText(location.toString());
+    }
 
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
