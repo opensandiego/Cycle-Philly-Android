@@ -481,7 +481,7 @@ public class RecordingActivity extends FragmentActivity implements ConnectionCal
 				break;
         }
 	}
-    
+
 	@Override
 	public void onDisconnected() {
 		// Turn off the request flag

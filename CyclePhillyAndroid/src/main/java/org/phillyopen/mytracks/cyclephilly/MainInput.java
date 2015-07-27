@@ -30,6 +30,7 @@
 
 package org.phillyopen.mytracks.cyclephilly;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -50,6 +51,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -76,13 +81,17 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class MainInput extends FragmentActivity {
+public class MainInput extends ActionBarActivity {
+
+    private Toolbar toolbar;
     private final static int MENU_USER_INFO = 0;
     private final static int MENU_CONTACT_US = 1;
     private final static int MENU_MAP = 2;
@@ -102,6 +111,9 @@ public class MainInput extends FragmentActivity {
     TextView weatherText;
     private TextView debugLocation;
     Typeface weatherFont;
+
+    private RecyclerView nearbyStations;
+    private List<IndegoStation> indegoList = Collections.emptyList();
 
     DbAdapter mDb;
     
@@ -157,6 +169,10 @@ public class MainInput extends FragmentActivity {
         weatherText.setTypeface(weatherFont);
         weatherText.setText(R.string.cloudy);
 
+        nearbyStations = (RecyclerView) findViewById(R.id.nearbyStationList);
+        nearbyStations.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        indegoList = new ArrayList<IndegoStation>();
+
 
 		
 		Intent rService = new Intent(this, RecordingService.class);
@@ -202,7 +218,7 @@ public class MainInput extends FragmentActivity {
 
         Firebase weatherRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia");
         Firebase tempRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/currently");
-        Firebase indegoRef = new Firebase("https://phl.firebaseio.com/indego/_geofire");
+        final Firebase indegoRef = new Firebase("https://phl.firebaseio.com/indego/_geofire");
 
 
 
@@ -244,8 +260,10 @@ public class MainInput extends FragmentActivity {
                 if(windValue > 4){
                     tempState.setTextColor(0xFFDC143C);
                     tempState.setText("winds " + cardinal + " at " + windSpeed + " mph. Ride with caution.");
+                }else{
+                    tempState.setTextColor(0xFFFFFFFF);
+                    tempState.setText("winds " + cardinal + " at " + windSpeed + " mph.");
                 }
-
 
             }
 
@@ -280,8 +298,8 @@ public class MainInput extends FragmentActivity {
                 Object value = snapshot.getValue();
                 Object hourly = ((Map) value).get("currently");
                 String alert = ((Map) hourly).get("summary").toString();
-                TextView weatherAlert = (TextView) findViewById(R.id.weatherAlert);
-                weatherAlert.setText(alert);
+//                TextView weatherAlert = (TextView) findViewById(R.id.weatherAlert);
+//                weatherAlert.setText(alert);
             }
 
             @Override
@@ -321,6 +339,13 @@ public class MainInput extends FragmentActivity {
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
                 System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
+                //Create Indego Station object. To-do: check if object exists
+                IndegoStation station = new IndegoStation();
+                station.kioskId = key;
+                station.location = location;
+                indegoList.add(station);
+                //To-do: Add indego station info to RideIndegoAdapter
+                
             }
 
             @Override
@@ -345,18 +370,24 @@ public class MainInput extends FragmentActivity {
         });
 
 
-		startButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-			    // Before we go to record, check GPS status
-			    final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-			    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-			        buildAlertMessageNoGps();
-			    } else {
+        startButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Before we go to record, check GPS status
+                final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    buildAlertMessageNoGps();
+                } else {
                     startActivity(i);
-	                MainInput.this.finish();
-			    }
-			}
-		});
+                    MainInput.this.finish();
+                }
+            }
+        });
+
+        toolbar = (Toolbar) findViewById(R.id.dashboard_bar);
+        toolbar.setTitle("Cycle Philly");
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 	}
 
     private LatLng myCurrentLocation(){
@@ -380,8 +411,8 @@ public class MainInput extends FragmentActivity {
     private void makeUseOfNewLocation(Location location) {
         System.out.println(location.toString());
         System.out.println("Here.");
-        debugLocation = (TextView) findViewById(R.id.locationDebug);
-        debugLocation.setText(location.toString());
+//        debugLocation = (TextView) findViewById(R.id.locationDebug);
+//        debugLocation.setText(location.toString());
     }
 
     private void buildAlertMessageNoGps() {

@@ -72,6 +72,6 @@
 	
 	<string name="nearbyRacksRoutes">Nearby Bike Racks and Routes:</string>
 	<string name="mapOfTrip">Map of your trip:</string>
-	<string name="ride_indego_nearest">Ride Indego - nearby stations</string>
+	<string name="ride_indego_nearest">Nearby Stations</string>
 
 </resources>

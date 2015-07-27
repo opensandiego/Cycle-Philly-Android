@@ -6,20 +6,20 @@ import com.firebase.geofire.GeoLocation;
  * Created by toby on 7/22/15.
  */
 public class IndegoStation {
-    private int kioskId;
+    public String kioskId;
     private String name;
-    private GeoLocation location;
+    public GeoLocation location;
     public double distance;
 
     public IndegoStation() {}
 
-    public IndegoStation(int kioskId, GeoLocation location,double distance){
+    public IndegoStation(String kioskId, GeoLocation location,double distance){
         this.kioskId = kioskId;
         this.location = location;
         this.distance = distance;
     }
 
-    public long getKioskId(){
+    public String getKioskId(){
         return kioskId;
     }
 
