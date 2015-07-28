@@ -99,6 +99,9 @@ public class MainInput extends ActionBarActivity {
     public final static int PREF_ANONID = 13;
     final String DEGREE  = "\u00b0";
     public final static String FIREBASE_REF = "https://cyclephilly.firebaseio.com";
+    Firebase indegoRef;
+    Firebase indegoGeofireRef;
+
 
     private final static int CONTEXT_RETRY = 0;
     private final static int CONTEXT_DELETE = 1;
@@ -114,6 +117,8 @@ public class MainInput extends ActionBarActivity {
 
     private RecyclerView nearbyStations;
     private List<IndegoStation> indegoList = Collections.emptyList();
+    private DataSnapshot indegoDataList;
+    private RideIndegoAdapter indegoAdapter;
 
     DbAdapter mDb;
     
@@ -169,9 +174,10 @@ public class MainInput extends ActionBarActivity {
         weatherText.setTypeface(weatherFont);
         weatherText.setText(R.string.cloudy);
 
-        nearbyStations = (RecyclerView) findViewById(R.id.nearbyStationList);
-        nearbyStations.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        indegoList = new ArrayList<IndegoStation>();
+
+
+
+
 
 
 		
@@ -218,22 +224,8 @@ public class MainInput extends ActionBarActivity {
 
         Firebase weatherRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia");
         Firebase tempRef = new Firebase("https://publicdata-weather.firebaseio.com/philadelphia/currently");
-        final Firebase indegoRef = new Firebase("https://phl.firebaseio.com/indego/_geofire");
 
 
-
-        phlref.child("indego").child("kiosks").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Kiosks updated
-                myCurrentLocation();
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
 
         tempRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -325,14 +317,34 @@ public class MainInput extends ActionBarActivity {
             public void onProviderDisabled(String provider) {}
         };
 
+        nearbyStations = (RecyclerView) findViewById(R.id.nearbyStationList);
+        nearbyStations.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        //Listener for Indego Changes
+        indegoRef = new Firebase("https://phl.firebaseio.com/indego/kiosks");
+        indegoRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //Updates! Add them to indego data list
+                indegoDataList = dataSnapshot;
+
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
 // Register the listener with the Location Manager to receive location updates
 
-
-        GeoFire geoFire = new GeoFire(indegoRef);
+        indegoGeofireRef = new Firebase("https://phl.firebaseio.com/indego/_geofire");
+        GeoFire geoFire = new GeoFire(indegoGeofireRef);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         mySpot = myCurrentLocation();
-        System.out.println(mySpot.toString());
+        indegoList = new ArrayList<IndegoStation>();
+        System.out.println("lo: "+mySpot.toString());
 
         GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mySpot.longitude,mySpot.latitude), 0.5);
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
@@ -343,9 +355,14 @@ public class MainInput extends ActionBarActivity {
                 IndegoStation station = new IndegoStation();
                 station.kioskId = key;
                 station.location = location;
+                if(indegoDataList != null){
+                    //get latest info from list
+                    station.name = (String) indegoDataList.child(key).child("properties").child("name").getValue();
+                }
+                System.out.println(station.name);
                 indegoList.add(station);
                 //To-do: Add indego station info to RideIndegoAdapter
-                
+
             }
 
             @Override
@@ -360,7 +377,11 @@ public class MainInput extends ActionBarActivity {
 
             @Override
             public void onGeoQueryReady() {
-                System.out.println("GEO READY");
+                System.out.println("GEO READY :"+indegoList.toString());
+                indegoAdapter = new RideIndegoAdapter(getApplicationContext(),indegoList);
+                nearbyStations.setAdapter(indegoAdapter);
+
+
             }
 
             @Override
@@ -411,6 +432,7 @@ public class MainInput extends ActionBarActivity {
     private void makeUseOfNewLocation(Location location) {
         System.out.println(location.toString());
         System.out.println("Here.");
+        //((RideIndegoAdapter)nearbyStations.getAdapter()).removeAll();
 //        debugLocation = (TextView) findViewById(R.id.locationDebug);
 //        debugLocation.setText(location.toString());
     }

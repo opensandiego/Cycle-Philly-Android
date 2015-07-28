@@ -34,8 +34,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="25dp"
-        android:layout_gravity="center_horizontal"
-        android:background="#62288abe">
+        android:background="#62288abe"
+        android:layout_gravity="center_horizontal">
 
 
 
@@ -83,13 +83,10 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_weight="0.91"
-        android:background="#ffefefef">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        android:layout_height="165dp"
+        android:layout_weight="0.04"
+        android:background="#ffefefef"
+        android:minHeight="150dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -124,7 +121,6 @@
                 android:layout_below="@+id/neaby_text">
 
             </android.support.v7.widget.RecyclerView>
-</RelativeLayout>
     </RelativeLayout>
 
     <TextView
@@ -135,10 +131,9 @@
         android:textColor="#ff40cdff" />
 
     <TextView android:layout_height="wrap_content" android:id="@+id/TextViewPreviousTrips" android:text="@string/previous_trips" android:layout_width="fill_parent" android:gravity="center"
-        android:layout_weight="0.08"></TextView><ListView android:layout_height="138dp" android:id="@+id/ListSavedTrips" android:layout_width="fill_parent"
-    android:layout_weight="0.01"></ListView>
+        android:layout_weight="0.43"></TextView><ListView android:layout_height="93dp" android:id="@+id/ListSavedTrips" android:layout_width="fill_parent"
+    android:layout_weight=".7"></ListView>
 
-    <Button android:layout_height="95dp" android:id="@+id/ButtonStart" android:text="@string/startNewTrip" android:textStyle="bold" android:layout_width="fill_parent" android:drawableLeft="@drawable/bike" android:layout_margin="8sp" android:hapticFeedbackEnabled="true" android:textSize="24sp"
-        ></Button>
+    <Button android:layout_height="95dp" android:id="@+id/ButtonStart" android:text="@string/startNewTrip" android:textStyle="bold" android:layout_width="fill_parent" android:drawableLeft="@drawable/bike" android:layout_margin="8sp" android:hapticFeedbackEnabled="true" android:textSize="24sp"></Button>
 
 </LinearLayout>
